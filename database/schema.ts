@@ -26,6 +26,35 @@ export class EmailVerificationSchema extends BaseModel {
   declare usedAt: DateTime | null
 }
 
+export class RoundSchema extends BaseModel {
+  static $columns = ['campaignEndsAt', 'createdAt', 'endsAt', 'id', 'mode', 'month', 'special', 'startsAt', 'status', 'updatedAt', 'voting1EndsAt', 'voting2EndsAt'] as const
+  $columns = RoundSchema.$columns
+  @column.dateTime()
+  declare campaignEndsAt: DateTime
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime()
+  declare endsAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare mode: string
+  @column()
+  declare month: string
+  @column()
+  declare special: boolean
+  @column.dateTime()
+  declare startsAt: DateTime
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column.dateTime()
+  declare voting1EndsAt: DateTime | null
+  @column.dateTime()
+  declare voting2EndsAt: DateTime | null
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns
