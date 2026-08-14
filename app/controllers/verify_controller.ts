@@ -22,11 +22,11 @@ export default class VerifyController {
     try {
       userExists = (await directory.fetchByEmail(email)) !== null
     } catch {
-      session.flash('error', '用户目录暂时不可用，请稍后再试')
+      session.flash('error', 'User directory is temporarily unavailable, please try again later')
       return response.redirect().back()
     }
     if (!userExists) {
-      session.flash('error', '该邮箱不在 Pdnode 用户列表中')
+      session.flash('error', 'This email is not in the Pdnode user list')
       return response.redirect().back()
     }
 
@@ -35,9 +35,9 @@ export default class VerifyController {
 
     try {
       await mailService.sendVerifyLink(email, token)
-      session.flash('success', '验证链接已发送，请查收邮件')
+      session.flash('success', 'Verification link sent, please check your email')
     } catch (error) {
-      session.flash('error', error instanceof Error ? error.message : '邮件发送失败')
+      session.flash('error', error instanceof Error ? error.message : 'Failed to send email')
     }
 
     return response.redirect().back()
@@ -51,7 +51,7 @@ export default class VerifyController {
     try {
       email = await service.consume(token)
     } catch {
-      session.flash('error', '链接无效或已过期，请重新获取')
+      session.flash('error', 'Link is invalid or expired, please request a new one')
       return response.redirect().toRoute('verify.show')
     }
 
@@ -59,11 +59,11 @@ export default class VerifyController {
     try {
       directoryUser = await directory.fetchByEmail(email)
     } catch {
-      session.flash('error', '用户目录暂时不可用，请稍后再试')
+      session.flash('error', 'User directory is temporarily unavailable, please try again later')
       return response.redirect().toRoute('verify.show')
     }
     if (!directoryUser) {
-      session.flash('error', '该邮箱不在 Pdnode 用户列表中')
+      session.flash('error', 'This email is not in the Pdnode user list')
       return response.redirect().toRoute('verify.show')
     }
 
@@ -82,7 +82,7 @@ export default class VerifyController {
     }
 
     await auth.use('web').login(user)
-    session.flash('success', '邮箱验证成功')
+    session.flash('success', 'Email verified successfully')
     return response.redirect().toRoute('home')
   }
 }

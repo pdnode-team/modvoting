@@ -12,15 +12,15 @@ export default class VoteController {
 
     const phase = round.status === 'voting1' ? 1 : round.status === 'voting2' ? 2 : null
     if (!phase) {
-      session.flash('error', '当前不在投票阶段')
+      session.flash('error', 'Voting is not open right now')
       return response.redirect().back()
     }
 
     try {
       await new VoteService(levelGuard).castVotes(user, round, phase, candidateIds)
-      session.flash('success', phase === 1 ? '第一轮投票成功' : '第二轮投票成功')
+      session.flash('success', phase === 1 ? 'Round 1 votes cast' : 'Round 2 votes cast')
     } catch (error) {
-      session.flash('error', error instanceof Error ? error.message : '投票失败')
+      session.flash('error', error instanceof Error ? error.message : 'Failed to cast votes')
     }
 
     return response.redirect().back()

@@ -33,7 +33,25 @@ export const plugins: Config['plugins'] = [
  * The teardown functions are executed after all the tests
  */
 export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
-  setup: [],
+  setup: [
+    /**
+     * Migrate the test database (separate SQLite file, see config/database.ts)
+     * before any test runs.
+     */
+    async () => {
+      const db = (await import('@adonisjs/lucid/services/db')).default
+      const { MigrationRunner } = await import('@adonisjs/lucid/migration')
+      const migrator = new MigrationRunner(db, app, {
+        direction: 'up',
+        dryRun: false,
+        connectionName: 'sqlite',
+      })
+      await migrator.run()
+      if (migrator.error) {
+        throw migrator.error
+      }
+    },
+  ],
   teardown: [],
 }
 

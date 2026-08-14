@@ -4,8 +4,11 @@ export default function VerifyRequest() {
   return (
     <div className="form-container">
       <div>
-        <h1> 邮箱验证 </h1>
-        <p>输入你的邮箱，我们会发送一个一次性验证链接（16 小时内有效）。无需密码。</p>
+        <h1> Email verification </h1>
+        <p>
+          Enter your email and we will send you a one-time verification link (valid for 16 hours).
+          No password needed.
+        </p>
       </div>
 
       <div>
@@ -25,7 +28,7 @@ export default function VerifyRequest() {
 
               <div>
                 <button type="submit" className="button" disabled={processing}>
-                  {processing ? '发送中…' : '发送验证链接'}
+                  {processing ? 'Sending…' : 'Send verification link'}
                 </button>
               </div>
             </>

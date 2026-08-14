@@ -17,7 +17,9 @@ export class MailService {
   async sendVerifyLink(email: string, token: string): Promise<void> {
     const url = `${env.get('APP_URL')}/verify/confirm?token=${token}`
     await mail.send((m) => {
-      m.to(email).subject('Pdnode 选举：验证你的邮箱').htmlView('emails/verify_link', { url })
+      m.to(email)
+        .subject('Pdnode Elections: verify your email')
+        .htmlView('emails/verify_link', { url })
     })
   }
 
@@ -33,7 +35,7 @@ export class MailService {
       if (!email) continue
       await mail.send((m) => {
         m.to(email)
-          .subject(`🎉 ${month} 月选举：你当选了！`)
+          .subject(`🎉 ${month} election: you won!`)
           .htmlView('emails/result_won', {
             month,
             votes: w.votes,
@@ -53,7 +55,7 @@ export class MailService {
       const entry = results.phase2.find((e) => e.candidate.id === c.id)
       await mail.send((m) => {
         m.to(c.user!.email!)
-          .subject(`${month} 月选举结果`)
+          .subject(`${month} election result`)
           .htmlView('emails/result_lost', { month, votes: entry?.votes ?? 0 })
       })
     }
@@ -65,7 +67,7 @@ export class MailService {
       if (!user?.email) continue
       await mail.send((m) => {
         m.to(user.email!)
-          .subject(`${month} 月选举结果公布`)
+          .subject(`${month} election results`)
           .htmlView('emails/result_voter', { month, winners: winnerNames })
       })
     }
@@ -81,7 +83,7 @@ export class MailService {
 
     await mail.send((m) => {
       m.to(env.get('MAIL_FROM_ADDRESS'))
-        .subject('新的选举异议')
+        .subject('New election objection')
         .htmlView('emails/objection_admin', {
           month: round.month,
           target: objection.candidate?.user?.fullName ?? objection.candidate?.user?.email ?? '?',

@@ -13,9 +13,9 @@ export default class ObjectionController {
     try {
       const objection = await new ObjectionService().submit(user, round, targetCandidateId, reason)
       await mailService.sendAdminObjection(objection.id)
-      session.flash('success', '异议已提交，管理员将收到通知')
+      session.flash('success', 'Objection submitted, the admin will be notified')
     } catch (error) {
-      session.flash('error', error instanceof Error ? error.message : '提交失败')
+      session.flash('error', error instanceof Error ? error.message : 'Submission failed')
     }
 
     return response.redirect().back()

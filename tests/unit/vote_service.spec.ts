@@ -48,7 +48,7 @@ test.group('VoteService', (group) => {
   async function makeRound(status = 'voting1', monthOverride?: string): Promise<Round> {
     const base = DateTime.fromISO('2026-09-29T07:00:00.000Z')
     return Round.create({
-      month: monthOverride ?? `2026-0${roundCounter}`.slice(-7),
+      month: monthOverride ?? `2026-${String(roundCounter).padStart(2, '0')}`,
       startsAt: base,
       campaignEndsAt: base.plus({ hours: 16 }),
       voting1EndsAt: base.plus({ hours: 32 }),

@@ -14,26 +14,27 @@ export default function Results(
 
   return (
     <div className="form-container">
-      <h1>选举结果</h1>
+      <h1>Election Results</h1>
       <p>
-        <Link route="home">← 返回首页</Link>
+        <Link route="home">← Back to home</Link>
       </p>
 
       {!round || !results ? (
-        <p>暂无结果。</p>
+        <p>No results yet.</p>
       ) : (
         <>
           <h2>
-            {round.month} 月选举（{round.mode === 'acclamation' ? '免投票' : '两轮投票'}）
+            {round.month} Election (
+            {round.mode === 'acclamation' ? 'Acclamation' : 'Two-round vote'})
           </h2>
 
           {results.winners.length > 0 && (
             <section>
-              <h3>当选版主</h3>
+              <h3>Elected moderators</h3>
               <ul>
                 {results.winners.map((w, i) => (
                   <li key={i}>
-                    {w.name}（{w.votes} 票）
+                    {w.name} ({w.votes} votes)
                   </li>
                 ))}
               </ul>
@@ -42,11 +43,11 @@ export default function Results(
 
           {results.phase1.length > 0 && (
             <section>
-              <h3>第一轮票数</h3>
+              <h3>Round 1 tallies</h3>
               <ul>
                 {results.phase1.map((e, i) => (
                   <li key={i}>
-                    {e.name}：{e.votes} 票
+                    {e.name}: {e.votes} votes
                   </li>
                 ))}
               </ul>
@@ -55,11 +56,11 @@ export default function Results(
 
           {results.phase2.length > 0 && (
             <section>
-              <h3>第二轮票数</h3>
+              <h3>Round 2 tallies</h3>
               <ul>
                 {results.phase2.map((e, i) => (
                   <li key={i}>
-                    {e.name}：{e.votes} 票
+                    {e.name}: {e.votes} votes
                   </li>
                 ))}
               </ul>

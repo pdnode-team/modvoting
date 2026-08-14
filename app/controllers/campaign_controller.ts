@@ -15,9 +15,9 @@ export default class CampaignController {
         months: payload.months,
         opinions: payload.opinions,
       })
-      session.flash('success', '报名成功，祝竞选顺利！')
+      session.flash('success', 'Application submitted, good luck!')
     } catch (error) {
-      session.flash('error', error instanceof Error ? error.message : '报名失败')
+      session.flash('error', error instanceof Error ? error.message : 'Application failed')
     }
 
     return response.redirect().back()
