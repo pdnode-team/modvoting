@@ -12,16 +12,18 @@ test.group('RoundScheduler', (group) => {
 
   const NOW = DateTime.fromISO('2026-08-13T12:00:00.000Z', { zone: 'UTC' })
 
-  test('ensureRounds: 从下月起生成 6 个连续月份轮次', async ({ assert }) => {
+  test('ensureRounds: 从下月起生成 6 个连续月份轮次（跳过特殊轮月 2026-09）', async ({
+    assert,
+  }) => {
     const scheduler = new RoundScheduler({ now: () => NOW })
 
     const created = await scheduler.ensureRounds(6)
 
-    assert.equal(created, 6)
+    assert.equal(created, 5) // 9 月被跳过
     const rows = await Round.query().orderBy('month', 'asc')
     assert.deepEqual(
       rows.map((r) => r.month),
-      ['2026-09', '2026-10', '2026-11', '2026-12', '2027-01', '2027-02']
+      ['2026-10', '2026-11', '2026-12', '2027-01', '2027-02']
     )
   })
 
@@ -37,7 +39,7 @@ test.group('RoundScheduler', (group) => {
         .count('* as c')
         .first()
         .then((r) => Number(r!.$extras.c)),
-      6
+      5
     )
   })
 
@@ -54,6 +56,39 @@ test.group('RoundScheduler', (group) => {
     assert.equal(oct.voting2EndsAt!.toMillis(), phases.voting2EndsAt.toUTC().toMillis())
     assert.equal(oct.endsAt.toMillis(), phases.endsAt.toUTC().toMillis())
     assert.isFalse(Boolean(oct.special))
+  })
+
+  test('ensureRounds 跳过特殊轮月（2026-09 配置）', async ({ assert }) => {
+    const scheduler = new RoundScheduler({
+      now: () => DateTime.fromISO('2026-08-14T00:00:00.000Z'),
+    })
+
+    const created = await scheduler.ensureRounds(3)
+    assert.equal(created, 2) // 10 月、11 月（9 月跳过）
+
+    const sep = await Round.findBy('month', '2026-09')
+    assert.isNull(sep) // 特殊轮月不生成常规轮
+    const oct = await Round.findBy('month', '2026-10')
+    assert.isNotNull(oct)
+  })
+
+  test('ensureSpecialRounds 按配置自动创建特殊轮（幂等）', async ({ assert }) => {
+    const scheduler = new RoundScheduler({
+      now: () => DateTime.fromISO('2026-08-14T00:00:00.000Z'),
+    })
+
+    const created = await scheduler.ensureSpecialRounds()
+    assert.equal(created, 1)
+    const round = await Round.findBy('month', '2026-09')
+    assert.isNotNull(round)
+    assert.equal(round!.special, true)
+    // 8/25 00:00 PDT = 8/25 07:00 UTC 开启
+    assert.equal(round!.startsAt.toUTC().toISO(), '2026-08-25T07:00:00.000Z')
+    // 16h×3 = 48h → 8/27 07:00 UTC 结束
+    assert.equal(round!.endsAt.toUTC().toISO(), '2026-08-27T07:00:00.000Z')
+
+    const again = await scheduler.ensureSpecialRounds()
+    assert.equal(again, 0) // 幂等
   })
 
   test('createSpecialRound: 自定义开启时刻，三阶段 16h×3', async ({ assert }) => {

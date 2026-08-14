@@ -14,6 +14,7 @@ export default async function bootElections(): Promise<void> {
   }
   const scheduler = new RoundScheduler()
   await scheduler.ensureRounds(6)
+  await scheduler.ensureSpecialRounds()
 
   await roundLifecycle.refreshAll().catch((error) => {
     logger.error({ err: error }, 'round lifecycle refresh failed')

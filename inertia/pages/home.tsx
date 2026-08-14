@@ -35,11 +35,12 @@ const fmt = (iso: string | null) => (iso ? new Date(iso).toLocaleString() : '—
 export default function Home(
   props: InertiaProps<{
     round: Round | null
+    campaignRound: Round | null
     candidates: Candidate[]
     previousModerators: string[]
   }>
 ) {
-  const { round, candidates, previousModerators, user } = props
+  const { round, campaignRound, candidates, previousModerators, user } = props
   const [selected, setSelected] = useState<number[]>([])
 
   const requiredVotes = round?.status === 'voting1' ? 3 : round?.status === 'voting2' ? 2 : 0
@@ -240,7 +241,7 @@ export default function Home(
             </section>
           )}
 
-          {round.status === 'campaigning' && user && (
+          {campaignRound && user && (
             <section
               style={{
                 marginTop: 20,
@@ -249,8 +250,15 @@ export default function Home(
                 borderRadius: 10,
               }}
             >
-              <h3 style={{ marginTop: 0 }}>Run for moderator (requires Titanium tier)</h3>
-              <Form route="campaigns.store" routeParams={{ id: round.id }}>
+              <h3 style={{ marginTop: 0 }}>
+                Run for moderator — next election: {campaignRound.month}
+                {campaignRound.special ? ' (special round)' : ''}
+              </h3>
+              <p style={{ color: '#6b7280', fontSize: 14, marginTop: 0 }}>
+                Applications are open anytime until voting starts on{' '}
+                {fmt(campaignRound.campaignEndsAt)}.
+              </p>
+              <Form route="campaigns.store" routeParams={{ id: campaignRound.id }}>
                 {({ errors }) => (
                   <div style={{ display: 'grid', gap: 10 }}>
                     <div>
@@ -325,6 +333,55 @@ export default function Home(
             </section>
           )}
         </>
+      )}
+
+      {campaignRound && user && (
+        <section
+          style={{
+            marginTop: 20,
+            padding: 16,
+            border: '1px solid #e5e7eb',
+            borderRadius: 10,
+          }}
+        >
+          <h3 style={{ marginTop: 0 }}>
+            Run for moderator — next election: {campaignRound.month}
+            {campaignRound.special ? ' (special round)' : ''}
+          </h3>
+          <p style={{ color: '#6b7280', fontSize: 14, marginTop: 0 }}>
+            Applications are open anytime until voting starts on {fmt(campaignRound.campaignEndsAt)}
+            .
+          </p>
+          <Form route="campaigns.store" routeParams={{ id: campaignRound.id }}>
+            {({ errors }) => (
+              <div style={{ display: 'grid', gap: 10 }}>
+                <div>
+                  <label>Campaign statement (optional)</label>
+                  <textarea name="statement" rows={3} style={{ width: '100%' }} />
+                </div>
+                <div>
+                  <label>
+                    How long have you been an active member of the Pdnode Team Chat on Zulip?
+                    (months)
+                  </label>
+                  <input type="number" name="months" min={1} step={1} />
+                  {errors.months && <div>{errors.months}</div>}
+                </div>
+                {previousModerators.map((name) => (
+                  <div key={name}>
+                    <label>How do you think {name} is doing as a moderator?</label>
+                    <textarea name={`opinions[${name}]`} rows={2} style={{ width: '100%' }} />
+                  </div>
+                ))}
+                <div>
+                  <button type="submit" className="button">
+                    Submit application
+                  </button>
+                </div>
+              </div>
+            )}
+          </Form>
+        </section>
       )}
     </div>
   )
