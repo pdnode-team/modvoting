@@ -1,0 +1,6 @@
+.adonisjs
+node_modules
+build
+.flow/docs/
+.opencode/skills/flow-*
+.opencode/commands/flow-*
