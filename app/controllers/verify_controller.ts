@@ -15,13 +15,14 @@ export default class VerifyController {
     return inertia.render('verify/request', {})
   }
 
-  async request({ request, response, session }: HttpContext) {
+  async request({ request, response, session, logger }: HttpContext) {
     const { email } = await request.validateUsing(verifyRequestValidator)
 
     let userExists = false
     try {
       userExists = (await directory.fetchByEmail(email)) !== null
-    } catch {
+    } catch (error) {
+      logger.error({ err: error, email }, 'level bot lookup failed')
       session.flash('error', 'User directory is temporarily unavailable, please try again later')
       return response.redirect().back()
     }
@@ -43,7 +44,7 @@ export default class VerifyController {
     return response.redirect().back()
   }
 
-  async confirm({ request, response, session, auth }: HttpContext) {
+  async confirm({ request, response, session, auth, logger }: HttpContext) {
     const token = request.input('token')
     const service = new VerifyTokenService()
 
@@ -58,7 +59,8 @@ export default class VerifyController {
     let directoryUser: Awaited<ReturnType<typeof directory.fetchByEmail>> = null
     try {
       directoryUser = await directory.fetchByEmail(email)
-    } catch {
+    } catch (error) {
+      logger.error({ err: error, email }, 'level bot lookup failed (confirm)')
       session.flash('error', 'User directory is temporarily unavailable, please try again later')
       return response.redirect().toRoute('verify.show')
     }
