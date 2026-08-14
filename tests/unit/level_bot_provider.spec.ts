@@ -2,13 +2,16 @@ import { test } from '@japa/runner'
 import { LevelBotProvider } from '#services/directory/level_bot_provider'
 import type { DirectoryUser } from '#services/directory/types'
 
-function mockFetch(handler: (url: string, init?: RequestInit) => unknown) {
+function mockFetch(
+  handler: (url: string, init?: RequestInit) => unknown,
+  options?: { status?: number; ok?: boolean }
+) {
   return async (input: string | URL | Request, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input.toString()
     const body = handler(url, init)
     return {
-      ok: true,
-      status: 200,
+      ok: options?.ok ?? true,
+      status: options?.status ?? 200,
       json: async () => body,
     } as Response
   }
@@ -117,12 +120,23 @@ test.group('LevelBotProvider', () => {
     assert.equal(user?.email, 'user8@chat.pdnode.com')
   })
 
-  test('fetchByEmail: 用户不存在 → null', async ({ assert }) => {
+  test('fetchByEmail: 用户不存在（真实 Level Bot 返回 HTTP 404）→ null 不抛异常', async ({
+    assert,
+  }) => {
     const provider = new LevelBotProvider(BASE, KEY, {
-      fetchFn: mockFetch(() => ({ error: 'user not found' })),
+      fetchFn: mockFetch(() => ({ error: 'user not found' }), { status: 404, ok: false }),
     })
 
-    assert.isNull(await provider.fetchByEmail('nobody@chat.pdnode.com'))
+    const user = await provider.fetchByEmail('nobody@chat.pdnode.com')
+    assert.isNull(user)
+  })
+
+  test('服务器错误（HTTP 500）→ 抛异常', async ({ assert }) => {
+    const provider = new LevelBotProvider(BASE, KEY, {
+      fetchFn: mockFetch(() => ({ error: 'boom' }), { status: 500, ok: false }),
+    })
+
+    await assert.rejects(() => provider.fetchByEmail('x@chat.pdnode.com'), /HTTP 500/)
   })
 
   test('fetchByZulipId: 走 /user 端点并带出 email', async ({ assert }) => {

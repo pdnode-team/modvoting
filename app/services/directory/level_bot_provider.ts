@@ -65,12 +65,18 @@ export class LevelBotProvider implements UserDirectoryProvider {
     const url = `${this.#baseUrl}${path}?${qs}`
     const res = await this.#fetchFn(url, this.#headers())
 
+    const body = (typeof res.json === 'function' ? await res.json().catch(() => null) : null) as
+      (LevelBotResponse & { error?: string }) | { error: string } | null
+
     if (!res.ok) {
+      // Level Bot：用户不存在 → HTTP 404 + {"error":"user not found"} → null（不是异常）
+      if (res.status === 404) {
+        return null
+      }
       throw new Error(`Level Bot ${path} failed: HTTP ${res.status}`)
     }
 
-    const body = (await res.json()) as LevelBotResponse | { error: string }
-    if ('error' in body || typeof body.user_id !== 'number') {
+    if (!body || 'error' in body || typeof body.user_id !== 'number') {
       return null
     }
 
