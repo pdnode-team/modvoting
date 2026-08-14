@@ -49,6 +49,25 @@ export class EmailVerificationSchema extends BaseModel {
   declare usedAt: DateTime | null
 }
 
+export class ObjectionSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'reason', 'roundId', 'targetCandidateId', 'updatedAt', 'userId'] as const
+  $columns = ObjectionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare reason: string
+  @column()
+  declare roundId: number
+  @column()
+  declare targetCandidateId: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class RoundSchema extends BaseModel {
   static $columns = ['campaignEndsAt', 'createdAt', 'endsAt', 'id', 'mode', 'month', 'special', 'startsAt', 'status', 'updatedAt', 'voting1EndsAt', 'voting2EndsAt'] as const
   $columns = RoundSchema.$columns

@@ -1,13 +1,14 @@
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
-import db from '@adonisjs/lucid/services/db'
 import Round from '#models/round'
+import { cleanElectionTables } from '#tests/helpers'
 import { RoundScheduler } from '#services/round_scheduler'
 import { roundPhasesFor } from '#services/round_window'
 
+
 test.group('RoundScheduler', (group) => {
   group.each.setup(async () => {
-    await db.rawQuery('DELETE FROM rounds')
+    await cleanElectionTables()
   })
 
   const NOW = DateTime.fromISO('2026-08-13T12:00:00.000Z', { zone: 'UTC' })

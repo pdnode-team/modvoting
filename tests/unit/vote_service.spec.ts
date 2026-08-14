@@ -15,6 +15,8 @@ import {
 } from '#services/vote_service'
 import { LevelGuardService } from '#services/level_guard_service'
 import type { DirectoryUser, UserDirectoryProvider } from '#services/directory/types'
+import { cleanElectionTables } from '#tests/helpers'
+
 
 function fakeGuard(levels: Record<number, number | null>): LevelGuardService {
   const provider: UserDirectoryProvider = {
@@ -41,10 +43,7 @@ test.group('VoteService', (group) => {
 
   group.each.setup(async () => {
     roundCounter += 1
-    await db.rawQuery('DELETE FROM votes')
-    await db.rawQuery('DELETE FROM candidates')
-    await db.rawQuery('DELETE FROM rounds')
-    await db.rawQuery('DELETE FROM users')
+    await cleanElectionTables()
   })
 
   async function makeRound(status = 'voting1', monthOverride?: string): Promise<Round> {

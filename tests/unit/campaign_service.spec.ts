@@ -1,9 +1,9 @@
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
-import db from '@adonisjs/lucid/services/db'
 import User from '#models/user'
 import Round from '#models/round'
 import Candidate from '#models/candidate'
+import { cleanElectionTables } from '#tests/helpers'
 import {
   CampaignService,
   CampaignClosedError,
@@ -38,9 +38,7 @@ const VALID_ANSWERS = { months: 12, opinions: { MSCRWT: 'great', '小狗 2.0': '
 
 test.group('CampaignService', (group) => {
   group.each.setup(async () => {
-    await db.rawQuery('DELETE FROM candidates')
-    await db.rawQuery('DELETE FROM rounds')
-    await db.rawQuery('DELETE FROM users')
+    await cleanElectionTables()
   })
 
   async function makeRound(status = 'campaigning'): Promise<Round> {

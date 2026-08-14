@@ -7,6 +7,8 @@ import Candidate from '#models/candidate'
 import TieBreak from '#models/tie_break'
 import { RoundLifecycle } from '#services/round_lifecycle'
 import { ResultService } from '#services/result_service'
+import { cleanElectionTables } from '#tests/helpers'
+
 
 function at(iso: string): DateTime {
   return DateTime.fromISO(iso, { zone: 'UTC' })
@@ -16,11 +18,7 @@ const NOW_SQL = () => DateTime.now().toSQL()
 
 test.group('RoundLifecycle', (group) => {
   group.each.setup(async () => {
-    await db.rawQuery('DELETE FROM tie_breaks')
-    await db.rawQuery('DELETE FROM votes')
-    await db.rawQuery('DELETE FROM candidates')
-    await db.rawQuery('DELETE FROM rounds')
-    await db.rawQuery('DELETE FROM users')
+    await cleanElectionTables()
   })
 
   async function makeRound(overrides: Partial<Round> = {}): Promise<Round> {
