@@ -8,7 +8,7 @@ export default class HomeController {
   async show({ inertia }: HttpContext) {
     const round = await Round.query()
       .whereNot('status', 'closed')
-      .orderBy('startsAt', 'desc')
+      .orderBy('startsAt', 'asc')
       .first()
 
     /**
