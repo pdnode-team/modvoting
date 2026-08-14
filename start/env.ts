@@ -24,4 +24,8 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Session
   SESSION_DRIVER: Env.schema.enum(['cookie', 'memory', 'database'] as const),
+
+  // Level Bot (Pdnode user directory)
+  LEVEL_BOT_URL: Env.schema.string({ format: 'url', tld: false }),
+  LEVEL_BOT_API_KEY: Env.schema.string(),
 })
