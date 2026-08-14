@@ -49,7 +49,14 @@ test.group('LevelBotProvider', () => {
     const provider = new LevelBotProvider(BASE, KEY, {
       fetchFn: mockFetch((url) => {
         assert.equal(url, `${BASE}/user?name=Pidan`)
-        return { user_id: 8, name: 'Pidan', email: null, total_xp: 100, level: 11, rank: 'Silver I' }
+        return {
+          user_id: 8,
+          name: 'Pidan',
+          email: null,
+          total_xp: 100,
+          level: 11,
+          rank: 'Silver I',
+        }
       }),
     })
 
