@@ -78,6 +78,27 @@ export class RoundSchema extends BaseModel {
   declare voting2EndsAt: DateTime | null
 }
 
+export class TieBreakSchema extends BaseModel {
+  static $columns = ['candidateIds', 'createdAt', 'id', 'roundId', 'seed', 'selectedIds', 'stage', 'updatedAt'] as const
+  $columns = TieBreakSchema.$columns
+  @column()
+  declare candidateIds: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare roundId: number
+  @column()
+  declare seed: string
+  @column()
+  declare selectedIds: string
+  @column()
+  declare stage: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class UserSchema extends BaseModel {
   static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'permissions', 'updatedAt', 'zulipUserId'] as const
   $columns = UserSchema.$columns
@@ -97,4 +118,23 @@ export class UserSchema extends BaseModel {
   declare updatedAt: DateTime | null
   @column()
   declare zulipUserId: number | null
+}
+
+export class VoteSchema extends BaseModel {
+  static $columns = ['candidateId', 'createdAt', 'id', 'phase', 'roundId', 'updatedAt', 'userId'] as const
+  $columns = VoteSchema.$columns
+  @column()
+  declare candidateId: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare phase: number
+  @column()
+  declare roundId: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
 }

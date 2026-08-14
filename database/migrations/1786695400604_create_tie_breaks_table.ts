@@ -1,22 +1,19 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'candidates'
+  protected tableName = 'tie_breaks'
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').notNullable()
-      table.integer('user_id').notNullable().unsigned().references('users.id')
       table.integer('round_id').notNullable().unsigned().references('rounds.id')
-      table.text('statement').nullable()
-      table.text('answers').notNullable().defaultTo('{}')
-      table.string('status', 20).notNullable().defaultTo('approved')
-      table.boolean('entered_voting_2').notNullable().defaultTo(false)
+      table.string('stage', 20).notNullable() // 'top5' | 'winners'
+      table.text('candidate_ids').notNullable() // JSON
+      table.text('selected_ids').notNullable() // JSON
+      table.string('seed', 64).notNullable()
 
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
-
-      table.unique(['user_id', 'round_id'])
     })
   }
 
