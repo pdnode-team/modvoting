@@ -23,8 +23,8 @@ export interface CampaignAnswers {
 export class CampaignService {
   constructor(
     private readonly guard: LevelGuardService,
-    private readonly previousModerators = electionConfig.previousModerators,
-    private readonly maxCandidates = electionConfig.maxCandidates
+    private readonly previousModerators: readonly { name: string; zulipId: number }[] = electionConfig.previousModerators,
+    private readonly maxCandidates: number = electionConfig.maxCandidates
   ) {}
 
   async apply(user: User, round: Round, answers: CampaignAnswers): Promise<Candidate> {
