@@ -1,0 +1,9 @@
+# pnpm 11 settings live here (package.json "pnpm" field is ignored since v11)
+onlyBuiltDependencies:
+  - '@swc/core'
+  - better-sqlite3
+  - esbuild
+  - fsevents
+
+overrides:
+  eslint-plugin-react>eslint: $eslint

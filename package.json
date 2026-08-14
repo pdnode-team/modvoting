@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "@adonisjs/auth": "^10.1.0",
+    "@adonisjs/bouncer": "^4.0.0",
     "@adonisjs/core": "^7.4.0",
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/inertia": "^5.0.0",
@@ -75,6 +76,7 @@
     "@adonisplus/flow": "^0.2.1",
     "@adonisplus/permissions": "^0.0.3",
     "@adonisplus/persona": "^0.2.11",
+    "@inertiajs/core": "^3.6.1",
     "@inertiajs/react": "^3.6.1",
     "@tuyau/core": "^1.2.2",
     "@vinejs/vine": "^4.4.0",
@@ -96,11 +98,6 @@
   "overrides": {
     "eslint-plugin-react": {
       "eslint": "$eslint"
-    }
-  },
-  "pnpm": {
-    "overrides": {
-      "eslint-plugin-react>eslint": "$eslint"
     }
   },
   "allowScripts": {
