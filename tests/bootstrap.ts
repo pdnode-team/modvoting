@@ -39,9 +39,9 @@ export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
      * before any test runs.
      */
     async () => {
-      const db = (await import('@adonisjs/lucid/services/db')).default
-      const { MigrationRunner } = await import('@adonisjs/lucid/migration')
-      const migrator = new MigrationRunner(db, app, {
+      const dbModule = await import('@adonisjs/lucid/services/db')
+      const migrationModule = await import('@adonisjs/lucid/migration')
+      const migrator = new migrationModule.MigrationRunner(dbModule.default, app, {
         direction: 'up',
         dryRun: false,
         connectionName: 'sqlite',
