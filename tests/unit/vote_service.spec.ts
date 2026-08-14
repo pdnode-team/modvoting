@@ -183,8 +183,9 @@ test.group('VoteService', (group) => {
     const voter = await makeUser(8)
     const users = await Promise.all([1, 2, 3, 4].map((id) => makeUser(id)))
     const cands = await makeCandidates(round, users, { voting2: true })
+    const blockedUser = await makeUser(5)
     const blocked = await Candidate.create({
-      userId: (await makeUser(5)).id,
+      userId: blockedUser.id,
       roundId: round.id,
       status: 'approved',
       enteredVoting2: false,
