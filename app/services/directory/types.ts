@@ -2,6 +2,7 @@
 export interface DirectoryUser {
   zulipId: number
   name: string
+  email: string | null
   totalXp: number
   level: number
   rank: string

@@ -2,11 +2,13 @@ import { randomBytes } from 'node:crypto'
 import User from '#models/user'
 import { VerifyTokenService } from '#services/verify_token_service'
 import { mailService } from '#services/mail_service'
+import { directory } from '#services/directory/index'
 import { verifyRequestValidator } from '#validators/verify'
 import type { HttpContext } from '@adonisjs/core/http'
 
 /**
  * 免登录邮箱验证：输入邮箱 → 发一次性链接（16h）→ 点击即登录。
+ * 邮箱必须存在于 Level Bot 用户列表（/user?email=），验证成功后绑定 Zulip 身份。
  */
 export default class VerifyController {
   async show({ inertia }: HttpContext) {
@@ -15,6 +17,19 @@ export default class VerifyController {
 
   async request({ request, response, session }: HttpContext) {
     const { email } = await request.validateUsing(verifyRequestValidator)
+
+    let userExists = false
+    try {
+      userExists = (await directory.fetchByEmail(email)) !== null
+    } catch {
+      session.flash('error', '用户目录暂时不可用，请稍后再试')
+      return response.redirect().back()
+    }
+    if (!userExists) {
+      session.flash('error', '该邮箱不在 Pdnode 用户列表中')
+      return response.redirect().back()
+    }
+
     const service = new VerifyTokenService()
     const { token } = await service.create(email)
 
@@ -40,13 +55,30 @@ export default class VerifyController {
       return response.redirect().toRoute('verify.show')
     }
 
+    let directoryUser: Awaited<ReturnType<typeof directory.fetchByEmail>> = null
+    try {
+      directoryUser = await directory.fetchByEmail(email)
+    } catch {
+      session.flash('error', '用户目录暂时不可用，请稍后再试')
+      return response.redirect().toRoute('verify.show')
+    }
+    if (!directoryUser) {
+      session.flash('error', '该邮箱不在 Pdnode 用户列表中')
+      return response.redirect().toRoute('verify.show')
+    }
+
     let user = await User.findBy('email', email)
     if (!user) {
       user = await User.create({
         email,
         password: randomBytes(32).toString('hex'),
-        fullName: null,
+        fullName: directoryUser.name,
+        zulipUserId: directoryUser.zulipId,
       })
+    } else {
+      user.fullName = directoryUser.name
+      user.zulipUserId = directoryUser.zulipId
+      await user.save()
     }
 
     await auth.use('web').login(user)

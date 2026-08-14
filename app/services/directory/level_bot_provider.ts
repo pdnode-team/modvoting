@@ -3,6 +3,7 @@ import type { DirectoryUser, UserDirectoryProvider } from './types.js'
 interface LevelBotResponse {
   user_id: number
   name: string
+  email: string | null
   total_xp: number
   level: number
   rank: string
@@ -15,14 +16,14 @@ interface LevelBotProviderOptions {
 /**
  * Pdnode Level Bot（zulip-level-bot）实现。
  *
- * 端点：
+ * 端点（实测 2026-08-14）：
  *   GET /health              → { ok, service }
- *   GET /xp?name=<name>      → { user_id, name, total_xp, level, rank }
- *   GET /xp?user_id=<id>     → 同上
- *   GET /leaderboard?limit=N → 数组（含 rank_display）
+ *   GET /user?user_id=<id>   → { user_id, name, email, total_xp, level, rank }
+ *   GET /user?email=<email>  → 同上（按邮箱）
+ *   GET /user?name=<name>    → 同上（按名字）
+ *   GET /leaderboard?limit=N → [{rank, user_id, name, total_xp, level, rank_display}, ...]
  * 认证：X-API-Key header。
- *
- * 当前不支持按邮箱查询（无 email 端点），fetchByEmail 返回 null。
+ * 用户不存在：{ "error": "user not found" } → 返回 null。
  */
 export class LevelBotProvider implements UserDirectoryProvider {
   readonly #baseUrl: string
@@ -36,16 +37,15 @@ export class LevelBotProvider implements UserDirectoryProvider {
   }
 
   async fetchByZulipId(id: number): Promise<DirectoryUser | null> {
-    return this.#fetch('/xp', { user_id: String(id) })
+    return this.#fetch('/user', { user_id: String(id) })
   }
 
   async fetchByName(name: string): Promise<DirectoryUser | null> {
-    return this.#fetch('/xp', { name })
+    return this.#fetch('/user', { name })
   }
 
-  async fetchByEmail(_email: string): Promise<DirectoryUser | null> {
-    // Level Bot 无 email 端点；待用户补充后实现
-    return null
+  async fetchByEmail(email: string): Promise<DirectoryUser | null> {
+    return this.#fetch('/user', { email })
   }
 
   async fetchLeaderboard(limit = 20): Promise<DirectoryUser[]> {
@@ -87,6 +87,7 @@ export class LevelBotProvider implements UserDirectoryProvider {
     return {
       zulipId: r.user_id,
       name: r.name,
+      email: r.email ?? null,
       totalXp: r.total_xp,
       level: r.level,
       rank: r.rank,

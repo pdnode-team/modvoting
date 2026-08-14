@@ -83,5 +83,6 @@ start/elections.ts    启动引导（预生成 + 5min 状态刷新）
 
 ## 已知待办
 
-- Level Bot 无 email 端点：邮箱→Zulip 用户绑定暂未实现（投票/竞选需用户已绑定 zulipUserId，见 `campaign_service`/`vote_service` 的 NotVerified 检查）。等 Level Bot 提供 email 查询后接入 `directory.fetchByEmail`。
-- admin 权限：`start/permissions.ts` 定义 `admin.manage_objections`，通过 users.permissions JSON 授予（`withPermissions`）。
+- admin 权限：`start/permissions.ts` 定义 `admin.manage_objections`，手动执行
+  `UPDATE users SET permissions='["admin.manage_objections"]' WHERE email='...'` 授予（`withPermissions` 读取该 JSON 列）。
+- 邮箱→Zulip 绑定已接通：验证流程用 Level Bot `GET /user?email=` 校验并绑定 zulipUserId。
