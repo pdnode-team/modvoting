@@ -12,29 +12,53 @@ const routes = {
     tokens: [{"old":"/","type":0,"val":"/","end":""}],
     types: placeholder as Registry['home']['types'],
   },
-  'new_account.create': {
+  'verify.show': {
     methods: ["GET","HEAD"],
-    pattern: '/signup',
-    tokens: [{"old":"/signup","type":0,"val":"signup","end":""}],
-    types: placeholder as Registry['new_account.create']['types'],
+    pattern: '/verify',
+    tokens: [{"old":"/verify","type":0,"val":"verify","end":""}],
+    types: placeholder as Registry['verify.show']['types'],
   },
-  'new_account.store': {
+  'verify.request': {
     methods: ["POST"],
-    pattern: '/signup',
-    tokens: [{"old":"/signup","type":0,"val":"signup","end":""}],
-    types: placeholder as Registry['new_account.store']['types'],
+    pattern: '/verify/request',
+    tokens: [{"old":"/verify/request","type":0,"val":"verify","end":""},{"old":"/verify/request","type":0,"val":"request","end":""}],
+    types: placeholder as Registry['verify.request']['types'],
   },
-  'session.create': {
+  'verify.confirm': {
     methods: ["GET","HEAD"],
-    pattern: '/login',
-    tokens: [{"old":"/login","type":0,"val":"login","end":""}],
-    types: placeholder as Registry['session.create']['types'],
+    pattern: '/verify/confirm',
+    tokens: [{"old":"/verify/confirm","type":0,"val":"verify","end":""},{"old":"/verify/confirm","type":0,"val":"confirm","end":""}],
+    types: placeholder as Registry['verify.confirm']['types'],
   },
-  'session.store': {
+  'campaigns.store': {
     methods: ["POST"],
-    pattern: '/login',
-    tokens: [{"old":"/login","type":0,"val":"login","end":""}],
-    types: placeholder as Registry['session.store']['types'],
+    pattern: '/rounds/:id/campaigns',
+    tokens: [{"old":"/rounds/:id/campaigns","type":0,"val":"rounds","end":""},{"old":"/rounds/:id/campaigns","type":1,"val":"id","end":""},{"old":"/rounds/:id/campaigns","type":0,"val":"campaigns","end":""}],
+    types: placeholder as Registry['campaigns.store']['types'],
+  },
+  'votes.store': {
+    methods: ["POST"],
+    pattern: '/rounds/:id/votes',
+    tokens: [{"old":"/rounds/:id/votes","type":0,"val":"rounds","end":""},{"old":"/rounds/:id/votes","type":1,"val":"id","end":""},{"old":"/rounds/:id/votes","type":0,"val":"votes","end":""}],
+    types: placeholder as Registry['votes.store']['types'],
+  },
+  'objections.store': {
+    methods: ["POST"],
+    pattern: '/rounds/:id/objections',
+    tokens: [{"old":"/rounds/:id/objections","type":0,"val":"rounds","end":""},{"old":"/rounds/:id/objections","type":1,"val":"id","end":""},{"old":"/rounds/:id/objections","type":0,"val":"objections","end":""}],
+    types: placeholder as Registry['objections.store']['types'],
+  },
+  'results.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/results',
+    tokens: [{"old":"/results","type":0,"val":"results","end":""}],
+    types: placeholder as Registry['results.show']['types'],
+  },
+  'admin.objections.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/objections',
+    tokens: [{"old":"/admin/objections","type":0,"val":"admin","end":""},{"old":"/admin/objections","type":0,"val":"objections","end":""}],
+    types: placeholder as Registry['admin.objections.index']['types'],
   },
   'session.destroy': {
     methods: ["POST"],

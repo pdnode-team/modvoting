@@ -3,13 +3,29 @@ import type { routes } from './index.ts'
 
 export interface ApiDefinition {
   home: typeof routes['home']
-  newAccount: {
-    create: typeof routes['new_account.create']
-    store: typeof routes['new_account.store']
+  verify: {
+    show: typeof routes['verify.show']
+    request: typeof routes['verify.request']
+    confirm: typeof routes['verify.confirm']
+  }
+  campaigns: {
+    store: typeof routes['campaigns.store']
+  }
+  votes: {
+    store: typeof routes['votes.store']
+  }
+  objections: {
+    store: typeof routes['objections.store']
+  }
+  results: {
+    show: typeof routes['results.show']
+  }
+  admin: {
+    objections: {
+      index: typeof routes['admin.objections.index']
+    }
   }
   session: {
-    create: typeof routes['session.create']
-    store: typeof routes['session.store']
     destroy: typeof routes['session.destroy']
   }
 }

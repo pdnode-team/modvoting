@@ -5,7 +5,6 @@ import { cleanElectionTables } from '#tests/helpers'
 import { RoundScheduler } from '#services/round_scheduler'
 import { roundPhasesFor } from '#services/round_window'
 
-
 test.group('RoundScheduler', (group) => {
   group.each.setup(async () => {
     await cleanElectionTables()
@@ -33,7 +32,13 @@ test.group('RoundScheduler', (group) => {
     const again = await scheduler.ensureRounds(6)
 
     assert.equal(again, 0)
-    assert.equal(await Round.query().count('* as c').first().then((r) => Number(r!.$extras.c)), 6)
+    assert.equal(
+      await Round.query()
+        .count('* as c')
+        .first()
+        .then((r) => Number(r!.$extras.c)),
+      6
+    )
   })
 
   test('ensureRounds: 时间戳与纯函数一致（UTC 存储）', async ({ assert }) => {
@@ -53,7 +58,9 @@ test.group('RoundScheduler', (group) => {
 
   test('createSpecialRound: 自定义开启时刻，三阶段 16h×3', async ({ assert }) => {
     const scheduler = new RoundScheduler({ now: () => NOW })
-    const startsAt = DateTime.fromISO('2026-08-25T00:00:00.000-07:00', { zone: 'America/Los_Angeles' })
+    const startsAt = DateTime.fromISO('2026-08-25T00:00:00.000-07:00', {
+      zone: 'America/Los_Angeles',
+    })
 
     const round = await scheduler.createSpecialRound('2026-09', startsAt)
 
@@ -69,7 +76,10 @@ test.group('RoundScheduler', (group) => {
     const scheduler = new RoundScheduler({ now: () => NOW })
     await scheduler.createSpecialRound('2026-09', DateTime.now())
 
-    await assert.rejects(() => scheduler.createSpecialRound('2026-09', DateTime.now()), /already exists/)
+    await assert.rejects(
+      () => scheduler.createSpecialRound('2026-09', DateTime.now()),
+      /already exists/
+    )
   })
 
   test('特殊轮占用 month 后 ensureRounds 跳过该月', async ({ assert }) => {

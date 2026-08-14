@@ -49,11 +49,11 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
                   </Form>
                 </>
               ) : (
-                <>
-                  <Link route="new_account.create">Signup</Link>
-                  <Link route="session.create">Login</Link>
-                </>
+                <Link route="verify.show">Email verify login</Link>
               )}
+              <Link route="results.show" style={{ marginLeft: 8 }}>
+                Results
+              </Link>
             </nav>
           </div>
         </div>

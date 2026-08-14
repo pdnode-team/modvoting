@@ -4,6 +4,12 @@
  */
 
 export const controllers = {
-  NewAccount: () => import('#controllers/new_account_controller'),
+  AdminObjections: () => import('#controllers/admin_objections_controller'),
+  Campaign: () => import('#controllers/campaign_controller'),
+  Home: () => import('#controllers/home_controller'),
+  Objection: () => import('#controllers/objection_controller'),
+  Results: () => import('#controllers/results_controller'),
   Session: () => import('#controllers/session_controller'),
+  Verify: () => import('#controllers/verify_controller'),
+  Vote: () => import('#controllers/vote_controller'),
 }

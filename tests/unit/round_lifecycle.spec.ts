@@ -9,7 +9,6 @@ import { RoundLifecycle } from '#services/round_lifecycle'
 import { ResultService } from '#services/result_service'
 import { cleanElectionTables } from '#tests/helpers'
 
-
 function at(iso: string): DateTime {
   return DateTime.fromISO(iso, { zone: 'UTC' })
 }
@@ -54,7 +53,12 @@ test.group('RoundLifecycle', (group) => {
     for (const z of zulipIds) {
       const u = await makeUser(z)
       out.push(
-        await Candidate.create({ userId: u.id, roundId: round.id, status: 'approved', answers: '{}' })
+        await Candidate.create({
+          userId: u.id,
+          roundId: round.id,
+          status: 'approved',
+          answers: '{}',
+        })
       )
     }
     return out
@@ -102,10 +106,20 @@ test.group('RoundLifecycle', (group) => {
     const cands = await addCandidates(round, [1, 2, 3, 4, 5, 6])
     // 票数：c0=5, c1=4, c2=3, c3=2, c4=1, c5=0
     const votes: Array<[number, number]> = [
-      [10, 0], [11, 0], [12, 0], [13, 0], [14, 0],
-      [20, 1], [21, 1], [22, 1], [23, 1],
-      [30, 2], [31, 2], [32, 2],
-      [40, 3], [41, 3],
+      [10, 0],
+      [11, 0],
+      [12, 0],
+      [13, 0],
+      [14, 0],
+      [20, 1],
+      [21, 1],
+      [22, 1],
+      [23, 1],
+      [30, 2],
+      [31, 2],
+      [32, 2],
+      [40, 3],
+      [41, 3],
       [50, 4],
     ]
     for (const [zid, idx] of votes) await cast(round, zid, 1, [cands[idx].id])
@@ -129,12 +143,52 @@ test.group('RoundLifecycle', (group) => {
     const cands = await addCandidates(round, [1, 2, 3, 4, 5, 6])
     // c0=10, c1=9, c2=8, c3=7, c4=6, c5=6 → 5/6 名平票 6
     const votes: Array<[number, number]> = [
-      [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [18, 0], [19, 0],
-      [20, 1], [21, 1], [22, 1], [23, 1], [24, 1], [25, 1], [26, 1], [27, 1], [28, 1],
-      [30, 2], [31, 2], [32, 2], [33, 2], [34, 2], [35, 2], [36, 2], [37, 2],
-      [40, 3], [41, 3], [42, 3], [43, 3], [44, 3], [45, 3], [46, 3],
-      [50, 4], [51, 4], [52, 4], [53, 4], [54, 4], [55, 4],
-      [60, 5], [61, 5], [62, 5], [63, 5], [64, 5], [65, 5],
+      [10, 0],
+      [11, 0],
+      [12, 0],
+      [13, 0],
+      [14, 0],
+      [15, 0],
+      [16, 0],
+      [17, 0],
+      [18, 0],
+      [19, 0],
+      [20, 1],
+      [21, 1],
+      [22, 1],
+      [23, 1],
+      [24, 1],
+      [25, 1],
+      [26, 1],
+      [27, 1],
+      [28, 1],
+      [30, 2],
+      [31, 2],
+      [32, 2],
+      [33, 2],
+      [34, 2],
+      [35, 2],
+      [36, 2],
+      [37, 2],
+      [40, 3],
+      [41, 3],
+      [42, 3],
+      [43, 3],
+      [44, 3],
+      [45, 3],
+      [46, 3],
+      [50, 4],
+      [51, 4],
+      [52, 4],
+      [53, 4],
+      [54, 4],
+      [55, 4],
+      [60, 5],
+      [61, 5],
+      [62, 5],
+      [63, 5],
+      [64, 5],
+      [65, 5],
     ]
     for (const [zid, idx] of votes) await cast(round, zid, 1, [cands[idx].id])
 
@@ -142,10 +196,15 @@ test.group('RoundLifecycle', (group) => {
     await lifecycle.refresh(round)
     await round.refresh()
 
-    const advanced = await Candidate.query().where('roundId', round.id).where('enteredVoting2', true)
+    const advanced = await Candidate.query()
+      .where('roundId', round.id)
+      .where('enteredVoting2', true)
     assert.lengthOf(advanced, 5)
 
-    const tieBreak = await TieBreak.query().where('roundId', round.id).where('stage', 'top5').first()
+    const tieBreak = await TieBreak.query()
+      .where('roundId', round.id)
+      .where('stage', 'top5')
+      .first()
     assert.isNotNull(tieBreak)
     const ids = JSON.parse(tieBreak!.candidateIds)
     assert.deepEqual(ids.sort(), [cands[4].id, cands[5].id].sort())
@@ -159,8 +218,11 @@ test.group('RoundLifecycle', (group) => {
     for (const c of cands) await c.save()
 
     const votes: Array<[number, number]> = [
-      [10, 0], [11, 0], [12, 0],
-      [20, 1], [21, 1],
+      [10, 0],
+      [11, 0],
+      [12, 0],
+      [20, 1],
+      [21, 1],
       [30, 2],
     ]
     for (const [zid, idx] of votes) await cast(round, zid, 2, [cands[idx].id])
@@ -187,8 +249,13 @@ test.group('RoundLifecycle', (group) => {
     }
     // c0=4, c1=3, c2=1, c3=1 → 3/4 名平票 1
     const votes: Array<[number, number]> = [
-      [10, 0], [11, 0], [12, 0], [13, 0],
-      [20, 1], [21, 1], [22, 1],
+      [10, 0],
+      [11, 0],
+      [12, 0],
+      [13, 0],
+      [20, 1],
+      [21, 1],
+      [22, 1],
       [30, 2],
       [40, 3],
     ]
@@ -201,7 +268,10 @@ test.group('RoundLifecycle', (group) => {
     const winners = await new ResultService().resultsFor(round)
     assert.lengthOf(winners.winners, 3)
 
-    const tieBreak = await TieBreak.query().where('roundId', round.id).where('stage', 'winners').first()
+    const tieBreak = await TieBreak.query()
+      .where('roundId', round.id)
+      .where('stage', 'winners')
+      .first()
     assert.isNotNull(tieBreak)
   })
 

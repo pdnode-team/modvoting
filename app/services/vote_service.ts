@@ -1,9 +1,9 @@
 import db from '@adonisjs/lucid/services/db'
 import Candidate from '#models/candidate'
-import Round from '#models/round'
-import User from '#models/user'
+import type Round from '#models/round'
+import type User from '#models/user'
 import Vote from '#models/vote'
-import { LevelGuardService } from './level_guard_service.js'
+import { type LevelGuardService } from './level_guard_service.js'
 
 export class VotingPhaseError extends Error {}
 export class IncompleteBallotError extends Error {}

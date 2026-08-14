@@ -34,7 +34,7 @@ function fakeGuard(levels: Record<number, number | null>): LevelGuardService {
   return new LevelGuardService(provider)
 }
 
-const VALID_ANSWERS = { months: 12, opinions: { MSCRWT: 'great', '小狗 2.0': 'ok' } }
+const VALID_ANSWERS = { months: 12, opinions: { 'MSCRWT': 'great', '小狗 2.0': 'ok' } }
 
 test.group('CampaignService', (group) => {
   group.each.setup(async () => {
@@ -99,10 +99,7 @@ test.group('CampaignService', (group) => {
     }
 
     const newcomer = await makeUser(999, 'new@test.com')
-    await assert.rejects(
-      () => service.apply(newcomer, round, VALID_ANSWERS),
-      CampaignFullError
-    )
+    await assert.rejects(() => service.apply(newcomer, round, VALID_ANSWERS), CampaignFullError)
   })
 
   test('非 campaigning 阶段 → CampaignClosedError', async ({ assert }) => {

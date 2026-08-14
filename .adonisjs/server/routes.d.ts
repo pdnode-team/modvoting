@@ -5,25 +5,35 @@ type ParamValue = string | number | bigint | boolean
 export type ScannedRoutes = {
   ALL: {
     'home': { paramsTuple?: []; params?: {} }
-    'new_account.create': { paramsTuple?: []; params?: {} }
-    'new_account.store': { paramsTuple?: []; params?: {} }
-    'session.create': { paramsTuple?: []; params?: {} }
-    'session.store': { paramsTuple?: []; params?: {} }
+    'verify.show': { paramsTuple?: []; params?: {} }
+    'verify.request': { paramsTuple?: []; params?: {} }
+    'verify.confirm': { paramsTuple?: []; params?: {} }
+    'campaigns.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'votes.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'objections.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'results.show': { paramsTuple?: []; params?: {} }
+    'admin.objections.index': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
-    'new_account.create': { paramsTuple?: []; params?: {} }
-    'session.create': { paramsTuple?: []; params?: {} }
+    'verify.show': { paramsTuple?: []; params?: {} }
+    'verify.confirm': { paramsTuple?: []; params?: {} }
+    'results.show': { paramsTuple?: []; params?: {} }
+    'admin.objections.index': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'home': { paramsTuple?: []; params?: {} }
-    'new_account.create': { paramsTuple?: []; params?: {} }
-    'session.create': { paramsTuple?: []; params?: {} }
+    'verify.show': { paramsTuple?: []; params?: {} }
+    'verify.confirm': { paramsTuple?: []; params?: {} }
+    'results.show': { paramsTuple?: []; params?: {} }
+    'admin.objections.index': { paramsTuple?: []; params?: {} }
   }
   POST: {
-    'new_account.store': { paramsTuple?: []; params?: {} }
-    'session.store': { paramsTuple?: []; params?: {} }
+    'verify.request': { paramsTuple?: []; params?: {} }
+    'campaigns.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'votes.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'objections.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'session.destroy': { paramsTuple?: []; params?: {} }
   }
 }

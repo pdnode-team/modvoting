@@ -1,6 +1,6 @@
 import db from '@adonisjs/lucid/services/db'
 import Candidate from '#models/candidate'
-import Round from '#models/round'
+import type Round from '#models/round'
 import TieBreak from '#models/tie_break'
 import { selectTop, type TallyRow } from './tie_break_utils.js'
 

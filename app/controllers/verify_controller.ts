@@ -1,0 +1,55 @@
+import { randomBytes } from 'node:crypto'
+import env from '#start/env'
+import User from '#models/user'
+import { VerifyTokenService } from '#services/verify_token_service'
+import { verifyRequestValidator } from '#validators/verify'
+import type { HttpContext } from '@adonisjs/core/http'
+
+/**
+ * 免登录邮箱验证：输入邮箱 → 发一次性链接（16h）→ 点击即登录。
+ * 发信暂用 logger 占位，Task 13 接入 SMTP。
+ */
+export default class VerifyController {
+  async show({ inertia }: HttpContext) {
+    return inertia.render('verify/request', {})
+  }
+
+  async request({ request, response, session, logger }: HttpContext) {
+    const { email } = await request.validateUsing(verifyRequestValidator)
+    const service = new VerifyTokenService()
+    const { token } = await service.create(email)
+
+    const url = `${env.get('APP_URL')}/verify/confirm?token=${token}`
+    // TODO(Task 13): 替换为真实邮件发送
+    logger.info({ email, url }, 'verification link')
+
+    session.flash('success', '验证链接已发送，请查收邮件')
+    return response.redirect().back()
+  }
+
+  async confirm({ request, response, session, auth }: HttpContext) {
+    const token = request.input('token')
+    const service = new VerifyTokenService()
+
+    let email: string
+    try {
+      email = await service.consume(token)
+    } catch {
+      session.flash('error', '链接无效或已过期，请重新获取')
+      return response.redirect().toRoute('verify.show')
+    }
+
+    let user = await User.findBy('email', email)
+    if (!user) {
+      user = await User.create({
+        email,
+        password: randomBytes(32).toString('hex'),
+        fullName: null,
+      })
+    }
+
+    await auth.use('web').login(user)
+    session.flash('success', '邮箱验证成功')
+    return response.redirect().toRoute('home')
+  }
+}

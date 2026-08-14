@@ -11,20 +11,28 @@ import { middleware } from '#start/kernel'
 import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
 
-router.on('/').renderInertia('home', {}).as('home')
+router.get('/', [controllers.Home, 'show']).as('home')
 
+// 免登录邮箱验证
+router.get('verify', [controllers.Verify, 'show']).as('verify.show')
+router.post('verify/request', [controllers.Verify, 'request']).as('verify.request')
+router.get('verify/confirm', [controllers.Verify, 'confirm']).as('verify.confirm')
+
+// 选举动作（需邮箱验证登录）
 router
   .group(() => {
-    router.get('signup', [controllers.NewAccount, 'create'])
-    router.post('signup', [controllers.NewAccount, 'store'])
-
-    router.get('login', [controllers.Session, 'create'])
-    router.post('login', [controllers.Session, 'store'])
-  })
-  .use(middleware.guest())
-
-router
-  .group(() => {
-    router.post('logout', [controllers.Session, 'destroy'])
+    router.post('rounds/:id/campaigns', [controllers.Campaign, 'store']).as('campaigns.store')
+    router.post('rounds/:id/votes', [controllers.Vote, 'store']).as('votes.store')
+    router.post('rounds/:id/objections', [controllers.Objection, 'store']).as('objections.store')
   })
   .use(middleware.auth())
+
+// 结果与异议管理
+router.get('results', [controllers.Results, 'show']).as('results.show')
+router
+  .get('admin/objections', [controllers.AdminObjections, 'index'])
+  .use(middleware.auth())
+  .use(middleware.authorize('admin.manage_objections'))
+  .as('admin.objections.index')
+
+router.post('logout', [controllers.Session, 'destroy']).use(middleware.auth()).as('session.destroy')

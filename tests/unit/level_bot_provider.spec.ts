@@ -61,8 +61,22 @@ test.group('LevelBotProvider', () => {
       fetchFn: mockFetch((url) => {
         assert.equal(url, `${BASE}/leaderboard?limit=5`)
         return [
-          { rank: 1, user_id: 8, name: 'Pidan', total_xp: 136207, level: 123, rank_display: 'Legend 63' },
-          { rank: 2, user_id: 16, name: '小狗 2.0', total_xp: 98339, level: 99, rank_display: 'Legend 39' },
+          {
+            rank: 1,
+            user_id: 8,
+            name: 'Pidan',
+            total_xp: 136207,
+            level: 123,
+            rank_display: 'Legend 63',
+          },
+          {
+            rank: 2,
+            user_id: 16,
+            name: '小狗 2.0',
+            total_xp: 98339,
+            level: 99,
+            rank_display: 'Legend 39',
+          },
         ]
       }),
     })
@@ -84,7 +98,7 @@ test.group('LevelBotProvider', () => {
 
   test('非 2xx 响应 → 抛错', async ({ assert }) => {
     const provider = new LevelBotProvider(BASE, KEY, {
-      fetchFn: async () => ({ ok: false, status: 401 } as Response),
+      fetchFn: async () => ({ ok: false, status: 401 }) as Response,
     })
 
     await assert.rejects(() => provider.fetchByZulipId(8), /Level Bot/)

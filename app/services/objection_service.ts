@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
 import Candidate from '#models/candidate'
 import Objection from '#models/objection'
-import Round from '#models/round'
-import User from '#models/user'
+import type Round from '#models/round'
+import type User from '#models/user'
 
 export class ObjectionPhaseError extends Error {}
 export class InvalidTargetError extends Error {}
@@ -62,9 +62,7 @@ export class ObjectionService {
 
   #rateLimit(userId: number): void {
     const now = Date.now()
-    const window = (this.#attempts.get(userId) ?? []).filter(
-      (t) => now - t < RATE_LIMIT_WINDOW_MS
-    )
+    const window = (this.#attempts.get(userId) ?? []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS)
     if (window.length >= RATE_LIMIT_MAX_ATTEMPTS) {
       throw new RateLimitError('Too many attempts, please try again later')
     }

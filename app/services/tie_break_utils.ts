@@ -15,7 +15,11 @@ export interface TieBreakRecord {
  * 从平票池中随机挑选 k 个（crypto 真随机 + 审计 seed）。
  * 返回 { pool, chosen, seed } 供 tie_breaks 表持久化审计。
  */
-export function randomPick<T>(items: T[], k: number, seed = randomBytes(16).toString('hex')): {
+export function randomPick<T>(
+  items: T[],
+  k: number,
+  seed = randomBytes(16).toString('hex')
+): {
   picked: T[]
   seed: string
 } {

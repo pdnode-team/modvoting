@@ -29,7 +29,15 @@ export function roundPhasesFor(month: string): RoundPhases {
   const nextMonth = monthNum === 12 ? 1 : monthNum + 1
 
   const endsAt = DateTime.fromObject(
-    { year: nextMonthYear, month: nextMonth, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0 },
+    {
+      year: nextMonthYear,
+      month: nextMonth,
+      day: 1,
+      hour: 0,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    },
     { zone: ZONE }
   )
 

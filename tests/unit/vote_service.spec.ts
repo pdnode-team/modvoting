@@ -17,7 +17,6 @@ import { LevelGuardService } from '#services/level_guard_service'
 import type { DirectoryUser, UserDirectoryProvider } from '#services/directory/types'
 import { cleanElectionTables } from '#tests/helpers'
 
-
 function fakeGuard(levels: Record<number, number | null>): LevelGuardService {
   const provider: UserDirectoryProvider = {
     async fetchByZulipId(id: number) {
@@ -68,7 +67,11 @@ test.group('VoteService', (group) => {
     })
   }
 
-  async function makeCandidates(round: Round, users: User[], opts: { voting2?: boolean } = {}): Promise<Candidate[]> {
+  async function makeCandidates(
+    round: Round,
+    users: User[],
+    opts: { voting2?: boolean } = {}
+  ): Promise<Candidate[]> {
     const out: Candidate[] = []
     for (const u of users) {
       out.push(
@@ -88,9 +91,17 @@ test.group('VoteService', (group) => {
     const service = new VoteService(fakeGuard({ 8: 15, 1: 30, 2: 30, 3: 30, 4: 30 }))
     const round = await makeRound()
     const voters = await makeUser(8)
-    const cands = await makeCandidates(round, await Promise.all([1, 2, 3, 4].map((id) => makeUser(id))))
+    const cands = await makeCandidates(
+      round,
+      await Promise.all([1, 2, 3, 4].map((id) => makeUser(id)))
+    )
 
-    const votes = await service.castVotes(voters, round, 1, cands.slice(0, 3).map((c) => c.id))
+    const votes = await service.castVotes(
+      voters,
+      round,
+      1,
+      cands.slice(0, 3).map((c) => c.id)
+    )
 
     assert.lengthOf(votes, 3)
     const rows = await db.from('votes').where('user_id', voters.id).where('round_id', round.id)
@@ -105,7 +116,13 @@ test.group('VoteService', (group) => {
     const cands = await makeCandidates(round, await Promise.all([1, 2].map((id) => makeUser(id))))
 
     await assert.rejects(
-      () => service.castVotes(voter, round, 1, cands.map((c) => c.id)),
+      () =>
+        service.castVotes(
+          voter,
+          round,
+          1,
+          cands.map((c) => c.id)
+        ),
       IncompleteBallotError
     )
   })
@@ -114,7 +131,10 @@ test.group('VoteService', (group) => {
     const service = new VoteService(fakeGuard({ 8: 15, 1: 30, 2: 30, 3: 30 }))
     const round = await makeRound()
     const voter = await makeUser(8)
-    const cands = await makeCandidates(round, await Promise.all([1, 2, 3].map((id) => makeUser(id))))
+    const cands = await makeCandidates(
+      round,
+      await Promise.all([1, 2, 3].map((id) => makeUser(id)))
+    )
 
     await assert.rejects(
       () => service.castVotes(voter, round, 1, [cands[0].id, cands[0].id, cands[1].id]),
@@ -129,7 +149,13 @@ test.group('VoteService', (group) => {
     const cands = await makeCandidates(round, [voter, await makeUser(2), await makeUser(3)])
 
     await assert.rejects(
-      () => service.castVotes(voter, round, 1, cands.map((c) => c.id)),
+      () =>
+        service.castVotes(
+          voter,
+          round,
+          1,
+          cands.map((c) => c.id)
+        ),
       SelfVoteError
     )
   })
@@ -139,7 +165,10 @@ test.group('VoteService', (group) => {
     const round = await makeRound()
     const otherRound = await makeRound('voting1', '2026-08')
     const voter = await makeUser(8)
-    const cands = await makeCandidates(round, await Promise.all([1, 2, 3].map((id) => makeUser(id))))
+    const cands = await makeCandidates(
+      round,
+      await Promise.all([1, 2, 3].map((id) => makeUser(id)))
+    )
     const [outside] = await makeCandidates(otherRound, [await makeUser(99)])
 
     await assert.rejects(
@@ -172,10 +201,19 @@ test.group('VoteService', (group) => {
     const service = new VoteService(fakeGuard({ 8: 15, 1: 30, 2: 30, 3: 30 }))
     const round = await makeRound('voting1')
     const voter = await makeUser(8)
-    const cands = await makeCandidates(round, await Promise.all([1, 2, 3].map((id) => makeUser(id))))
+    const cands = await makeCandidates(
+      round,
+      await Promise.all([1, 2, 3].map((id) => makeUser(id)))
+    )
 
     await assert.rejects(
-      () => service.castVotes(voter, round, 2, cands.slice(0, 2).map((c) => c.id)),
+      () =>
+        service.castVotes(
+          voter,
+          round,
+          2,
+          cands.slice(0, 2).map((c) => c.id)
+        ),
       VotingPhaseError
     )
   })
@@ -184,11 +222,25 @@ test.group('VoteService', (group) => {
     const service = new VoteService(fakeGuard({ 8: 15, 1: 30, 2: 30, 3: 30, 4: 30 }))
     const round = await makeRound()
     const voter = await makeUser(8)
-    const cands = await makeCandidates(round, await Promise.all([1, 2, 3, 4].map((id) => makeUser(id))))
+    const cands = await makeCandidates(
+      round,
+      await Promise.all([1, 2, 3, 4].map((id) => makeUser(id)))
+    )
 
-    await service.castVotes(voter, round, 1, cands.slice(0, 3).map((c) => c.id))
+    await service.castVotes(
+      voter,
+      round,
+      1,
+      cands.slice(0, 3).map((c) => c.id)
+    )
     await assert.rejects(
-      () => service.castVotes(voter, round, 1, cands.slice(1, 4).map((c) => c.id)),
+      () =>
+        service.castVotes(
+          voter,
+          round,
+          1,
+          cands.slice(1, 4).map((c) => c.id)
+        ),
       AlreadyVotedError
     )
   })
@@ -197,10 +249,19 @@ test.group('VoteService', (group) => {
     const service = new VoteService(fakeGuard({ 8: 10, 1: 30, 2: 30, 3: 30 }))
     const round = await makeRound()
     const voter = await makeUser(8)
-    const cands = await makeCandidates(round, await Promise.all([1, 2, 3].map((id) => makeUser(id))))
+    const cands = await makeCandidates(
+      round,
+      await Promise.all([1, 2, 3].map((id) => makeUser(id)))
+    )
 
     await assert.rejects(
-      () => service.castVotes(voter, round, 1, cands.map((c) => c.id)),
+      () =>
+        service.castVotes(
+          voter,
+          round,
+          1,
+          cands.map((c) => c.id)
+        ),
       /Requires silver/
     )
   })
@@ -209,9 +270,13 @@ test.group('VoteService', (group) => {
     const service = new VoteService(fakeGuard({ 8: 15, 1: 30, 2: 30, 3: 30 }))
     const round = await makeRound('voting2')
     const voter = await makeUser(8)
-    const cands = await makeCandidates(round, await Promise.all([1, 2, 3].map((id) => makeUser(id))), {
-      voting2: true,
-    })
+    const cands = await makeCandidates(
+      round,
+      await Promise.all([1, 2, 3].map((id) => makeUser(id))),
+      {
+        voting2: true,
+      }
+    )
 
     await assert.rejects(
       () => service.castVotes(voter, round, 2, [cands[0].id]),

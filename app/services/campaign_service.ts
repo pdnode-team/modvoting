@@ -1,7 +1,7 @@
 import Candidate from '#models/candidate'
-import Round from '#models/round'
-import User from '#models/user'
-import { LevelGuardService } from './level_guard_service.js'
+import type Round from '#models/round'
+import type User from '#models/user'
+import { type LevelGuardService } from './level_guard_service.js'
 import { electionConfig } from '#config/elections'
 
 export class CampaignClosedError extends Error {}
@@ -23,7 +23,10 @@ export interface CampaignAnswers {
 export class CampaignService {
   constructor(
     private readonly guard: LevelGuardService,
-    private readonly previousModerators: readonly { name: string; zulipId: number }[] = electionConfig.previousModerators,
+    private readonly previousModerators: readonly {
+      name: string
+      zulipId: number
+    }[] = electionConfig.previousModerators,
     private readonly maxCandidates: number = electionConfig.maxCandidates
   ) {}
 
@@ -46,9 +49,7 @@ export class CampaignService {
       throw new AlreadyAppliedError('Already applied for this round')
     }
 
-    const [{ $extras }] = await Candidate.query()
-      .where('roundId', round.id)
-      .count('* as c')
+    const [{ $extras }] = await Candidate.query().where('roundId', round.id).count('* as c')
     if (Number($extras.c) >= this.maxCandidates) {
       throw new CampaignFullError('Campaign pool is full')
     }

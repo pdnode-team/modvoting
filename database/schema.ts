@@ -8,7 +8,17 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class CandidateSchema extends BaseModel {
-  static $columns = ['answers', 'createdAt', 'enteredVoting2', 'id', 'roundId', 'statement', 'status', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'answers',
+    'createdAt',
+    'enteredVoting2',
+    'id',
+    'roundId',
+    'statement',
+    'status',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = CandidateSchema.$columns
   @column()
   declare answers: string
@@ -31,7 +41,15 @@ export class CandidateSchema extends BaseModel {
 }
 
 export class EmailVerificationSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'expiresAt', 'id', 'token', 'updatedAt', 'usedAt'] as const
+  static $columns = [
+    'createdAt',
+    'email',
+    'expiresAt',
+    'id',
+    'token',
+    'updatedAt',
+    'usedAt',
+  ] as const
   $columns = EmailVerificationSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -50,7 +68,15 @@ export class EmailVerificationSchema extends BaseModel {
 }
 
 export class ObjectionSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'reason', 'roundId', 'targetCandidateId', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'createdAt',
+    'id',
+    'reason',
+    'roundId',
+    'targetCandidateId',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = ObjectionSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -69,7 +95,20 @@ export class ObjectionSchema extends BaseModel {
 }
 
 export class RoundSchema extends BaseModel {
-  static $columns = ['campaignEndsAt', 'createdAt', 'endsAt', 'id', 'mode', 'month', 'special', 'startsAt', 'status', 'updatedAt', 'voting1EndsAt', 'voting2EndsAt'] as const
+  static $columns = [
+    'campaignEndsAt',
+    'createdAt',
+    'endsAt',
+    'id',
+    'mode',
+    'month',
+    'special',
+    'startsAt',
+    'status',
+    'updatedAt',
+    'voting1EndsAt',
+    'voting2EndsAt',
+  ] as const
   $columns = RoundSchema.$columns
   @column.dateTime()
   declare campaignEndsAt: DateTime
@@ -98,7 +137,16 @@ export class RoundSchema extends BaseModel {
 }
 
 export class TieBreakSchema extends BaseModel {
-  static $columns = ['candidateIds', 'createdAt', 'id', 'roundId', 'seed', 'selectedIds', 'stage', 'updatedAt'] as const
+  static $columns = [
+    'candidateIds',
+    'createdAt',
+    'id',
+    'roundId',
+    'seed',
+    'selectedIds',
+    'stage',
+    'updatedAt',
+  ] as const
   $columns = TieBreakSchema.$columns
   @column()
   declare candidateIds: string
@@ -119,7 +167,16 @@ export class TieBreakSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'permissions', 'updatedAt', 'zulipUserId'] as const
+  static $columns = [
+    'createdAt',
+    'email',
+    'fullName',
+    'id',
+    'password',
+    'permissions',
+    'updatedAt',
+    'zulipUserId',
+  ] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -140,7 +197,15 @@ export class UserSchema extends BaseModel {
 }
 
 export class VoteSchema extends BaseModel {
-  static $columns = ['candidateId', 'createdAt', 'id', 'phase', 'roundId', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'candidateId',
+    'createdAt',
+    'id',
+    'phase',
+    'roundId',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = VoteSchema.$columns
   @column()
   declare candidateId: number
