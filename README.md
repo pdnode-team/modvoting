@@ -26,16 +26,18 @@ AdonisJS v7 + Inertia React + Plus（Persona / Permissions / Flow）实现的 Pd
 
 ```bash
 nvm use 24
-npm install            # 需先配置 Plus registry（见下）
-cp .env.example .env   # 填入 LEVEL_BOT_* 与 SMTP_*
-npm run dev            # http://localhost:3333
+pnpm install          # 需先配置 Plus registry（见下）
+cp .env.example .env  # 填入 LEVEL_BOT_* 与 SMTP_*
+pnpm dev              # http://localhost:3333
 ```
+
+> 包管理器：**pnpm 11+**（`pnpm-workspace.yaml` 存放 settings：`onlyBuiltDependencies`、`overrides`；pnpm 11 起不再读 package.json 的 `pnpm` 字段）。
 
 ### Plus 私有 registry
 
 ```bash
 # 项目 .npmrc 已含：@adonisplus:registry=https://plus.adonisjs.com/registry/
-# 本地 token（一次性，每台机器一次）：
+# 本地 token（一次性，每台机器一次；pnpm 与 npm 共用 ~/.npmrc）：
 npm config set "//plus.adonisjs.com/registry/:_authToken" <token>
 ```
 
@@ -50,9 +52,9 @@ npm config set "//plus.adonisjs.com/registry/:_authToken" <token>
 ## 常用命令
 
 ```bash
-npm test          # Japa 单测（62 个，含 DST 矩阵/并发/平票）
-npm run typecheck # tsc
-npm run lint      # eslint
+pnpm test          # Japa 单测（66 个，含 DST 矩阵/并发/平票）
+pnpm run typecheck # tsc
+pnpm run lint      # eslint
 node ace migration:run / rollback --batch=0
 node ace flow:install --agent=opencode --stack=react --package="*" --skill="*"   # 重新装 Flow
 ```
