@@ -7,6 +7,8 @@ import { selectTop, type TallyRow } from './tie_break_utils.js'
 
 interface LifecycleOptions {
   now?: () => DateTime
+  /** 结果确定后的回调（如邮件通知）；测试中通常不传 */
+  onResults?: (round: Round) => Promise<void> | void
 }
 
 export const AFFIRMATIVE_CAP = 3
@@ -22,9 +24,11 @@ export const TOP3 = 3
  */
 export class RoundLifecycle {
   readonly #now: () => DateTime
+  readonly #onResults?: (round: Round) => Promise<void> | void
 
   constructor(options: LifecycleOptions = {}) {
     this.#now = options.now ?? (() => DateTime.now())
+    this.#onResults = options.onResults
   }
 
   async refresh(round: Round): Promise<void> {
@@ -39,6 +43,7 @@ export class RoundLifecycle {
     } else if (round.status === 'objection' && now >= round.endsAt) {
       round.status = 'closed'
       await round.save()
+      await this.#onResults?.(round)
     }
   }
 
@@ -86,6 +91,9 @@ export class RoundLifecycle {
       round.status = 'voting2'
     } else {
       round.status = 'closed'
+      await round.save()
+      await this.#onResults?.(round)
+      return
     }
     await round.save()
   }

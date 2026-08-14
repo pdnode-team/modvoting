@@ -28,4 +28,17 @@ export default await Env.create(new URL('../', import.meta.url), {
   // Level Bot (Pdnode user directory)
   LEVEL_BOT_URL: Env.schema.string({ format: 'url', tld: false }),
   LEVEL_BOT_API_KEY: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the mail package
+  |----------------------------------------------------------
+  */
+  MAIL_MAILER: Env.schema.enum(['smtp'] as const),
+  MAIL_FROM_NAME: Env.schema.string(),
+  MAIL_FROM_ADDRESS: Env.schema.string(),
+  SMTP_HOST: Env.schema.string(),
+  SMTP_PORT: Env.schema.number(),
+  SMTP_USERNAME: Env.schema.string(),
+  SMTP_PASSWORD: Env.schema.string(),
 })
