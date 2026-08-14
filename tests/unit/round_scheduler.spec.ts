@@ -47,7 +47,7 @@ test.group('RoundScheduler', (group) => {
     assert.equal(oct.voting1EndsAt!.toMillis(), phases.voting1EndsAt.toUTC().toMillis())
     assert.equal(oct.voting2EndsAt!.toMillis(), phases.voting2EndsAt.toUTC().toMillis())
     assert.equal(oct.endsAt.toMillis(), phases.endsAt.toUTC().toMillis())
-    assert.isFalse(oct.special)
+    assert.isFalse(Boolean(oct.special))
   })
 
   test('createSpecialRound: 自定义开启时刻，三阶段 16h×3', async ({ assert }) => {
@@ -56,7 +56,7 @@ test.group('RoundScheduler', (group) => {
 
     const round = await scheduler.createSpecialRound('2026-09', startsAt)
 
-    assert.isTrue(round.special)
+    assert.isTrue(Boolean(round.special))
     assert.equal(round.startsAt.toISO(), startsAt.toUTC().toISO())
     assert.equal(round.campaignEndsAt.toISO(), startsAt.plus({ hours: 16 }).toUTC().toISO())
     assert.equal(round.voting1EndsAt!.toISO(), startsAt.plus({ hours: 32 }).toUTC().toISO())
@@ -83,6 +83,6 @@ test.group('RoundScheduler', (group) => {
       rows.map((r) => r.month),
       ['2026-09', '2026-10', '2026-11']
     )
-    assert.equal(rows[0].special, true)
+    assert.equal(rows[0].special, 1)
   })
 })
