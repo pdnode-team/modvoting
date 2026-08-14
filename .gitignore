@@ -27,3 +27,6 @@ yarn-error.log
 .flow/docs/
 .opencode/skills/flow-*
 .opencode/commands/flow-*
+
+# npm registry auth (local only)
+.npmrc
