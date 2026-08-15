@@ -8,6 +8,6 @@ export default class Objection extends ObjectionSchema {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @belongsTo(() => Candidate)
+  @belongsTo(() => Candidate, { foreignKey: 'targetCandidateId' })
   declare candidate: BelongsTo<typeof Candidate>
 }

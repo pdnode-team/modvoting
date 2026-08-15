@@ -66,6 +66,27 @@ test.group('ObjectionService', (group) => {
     assert.lengthOf(rows, 1)
   })
 
+  test('Objection.candidate 关系映射 target_candidate_id 列（preload 可加载）', async ({
+    assert,
+  }) => {
+    const service = new ObjectionService()
+    const round = await makeRound()
+    const winner = await makeUser(1)
+    const cand = await Candidate.create({
+      userId: winner.id,
+      roundId: round.id,
+      status: 'approved',
+      answers: '{}',
+    })
+    const objector = await makeUser(2)
+    const objection = await service.submit(objector, round, cand.id, 'He is inactive')
+
+    await objection.load('candidate')
+    assert.equal(objection.candidate.id, cand.id)
+    await objection.load('user')
+    assert.equal(objection.user.id, objector.id)
+  })
+
   test('非公示期 → ObjectionPhaseError', async ({ assert }) => {
     const service = new ObjectionService()
     const round = await makeRound('closed')
