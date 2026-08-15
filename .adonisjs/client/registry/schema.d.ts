@@ -115,6 +115,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_objections_controller').default['index']>>>
     }
   }
+  'admin.candidates.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/candidates'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_candidates_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_candidates_controller').default['index']>>>
+    }
+  }
   'session.destroy': {
     methods: ["POST"]
     pattern: '/logout'

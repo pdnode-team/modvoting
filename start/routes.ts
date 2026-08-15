@@ -35,4 +35,10 @@ router
   .use(middleware.authorize('admin.manage_objections'))
   .as('admin.objections.index')
 
+router
+  .get('admin/candidates', [controllers.AdminCandidates, 'index'])
+  .use(middleware.auth())
+  .use(middleware.authorize('admin.manage_objections'))
+  .as('admin.candidates.index')
+
 router.post('logout', [controllers.Session, 'destroy']).use(middleware.auth()).as('session.destroy')

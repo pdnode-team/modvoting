@@ -24,6 +24,9 @@ export interface ApiDefinition {
     objections: {
       index: typeof routes['admin.objections.index']
     }
+    candidates: {
+      index: typeof routes['admin.candidates.index']
+    }
   }
   session: {
     destroy: typeof routes['session.destroy']

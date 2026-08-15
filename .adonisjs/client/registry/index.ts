@@ -60,6 +60,12 @@ const routes = {
     tokens: [{"old":"/admin/objections","type":0,"val":"admin","end":""},{"old":"/admin/objections","type":0,"val":"objections","end":""}],
     types: placeholder as Registry['admin.objections.index']['types'],
   },
+  'admin.candidates.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/candidates',
+    tokens: [{"old":"/admin/candidates","type":0,"val":"admin","end":""},{"old":"/admin/candidates","type":0,"val":"candidates","end":""}],
+    types: placeholder as Registry['admin.candidates.index']['types'],
+  },
   'session.destroy': {
     methods: ["POST"],
     pattern: '/logout',

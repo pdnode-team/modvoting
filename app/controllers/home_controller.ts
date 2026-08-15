@@ -29,16 +29,21 @@ export default class HomeController {
           .orderBy('createdAt', 'asc')
       : []
 
+    const fmtLA = (d: DateTime) => d.setZone('America/Los_Angeles').toFormat('MM/dd/yyyy, h:mm a')
+
     const serialize = (r: Round) => ({
       id: r.id,
       month: r.month,
       status: r.status,
       mode: r.mode,
       startsAt: r.startsAt.toISO()!,
+      startsAtLabel: fmtLA(r.startsAt),
       campaignEndsAt: r.campaignEndsAt.toISO()!,
+      campaignEndsAtLabel: fmtLA(r.campaignEndsAt),
       voting1EndsAt: r.voting1EndsAt?.toISO() ?? null,
       voting2EndsAt: r.voting2EndsAt?.toISO() ?? null,
       endsAt: r.endsAt.toISO()!,
+      endsAtLabel: fmtLA(r.endsAt),
       special: Boolean(r.special),
     })
 

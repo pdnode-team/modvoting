@@ -4,6 +4,7 @@
  */
 
 export const controllers = {
+  AdminCandidates: () => import('#controllers/admin_candidates_controller'),
   AdminObjections: () => import('#controllers/admin_objections_controller'),
   Campaign: () => import('#controllers/campaign_controller'),
   Home: () => import('#controllers/home_controller'),

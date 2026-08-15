@@ -9,10 +9,13 @@ type Round = {
   status: string
   mode: string
   startsAt: string
+  startsAtLabel: string
   campaignEndsAt: string
+  campaignEndsAtLabel: string
   voting1EndsAt: string | null
   voting2EndsAt: string | null
   endsAt: string
+  endsAtLabel: string
   special: boolean
 }
 
@@ -30,8 +33,6 @@ const MODE_LABEL: Record<string, string> = {
   election: 'Two-round election',
   acclamation: 'Acclamation (no vote needed)',
 }
-
-const fmt = (iso: string | null) => (iso ? new Date(iso).toLocaleString() : '—')
 
 export default function Home(
   props: InertiaProps<{
@@ -83,7 +84,7 @@ export default function Home(
               </span>
             </div>
             <p className="muted" style={{ marginBottom: 0 }}>
-              Starts {fmt(round.startsAt)} · Ends {fmt(round.endsAt)}
+              Starts {round.startsAtLabel} · Ends {round.endsAtLabel}
             </p>
           </section>
 
@@ -188,7 +189,7 @@ export default function Home(
             {campaignRound.special ? ' (special round)' : ''}
           </h3>
           <p className="muted">
-            Applications are open anytime until voting starts on {fmt(campaignRound.campaignEndsAt)}
+            Applications are open anytime until voting starts on {campaignRound.campaignEndsAtLabel}
             .
           </p>
           <Form route="campaigns.store" routeParams={{ id: campaignRound.id }}>

@@ -13,6 +13,7 @@ export type ScannedRoutes = {
     'objections.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'results.show': { paramsTuple?: []; params?: {} }
     'admin.objections.index': { paramsTuple?: []; params?: {} }
+    'admin.candidates.index': { paramsTuple?: []; params?: {} }
     'session.destroy': { paramsTuple?: []; params?: {} }
   }
   GET: {
@@ -21,6 +22,7 @@ export type ScannedRoutes = {
     'verify.confirm': { paramsTuple?: []; params?: {} }
     'results.show': { paramsTuple?: []; params?: {} }
     'admin.objections.index': { paramsTuple?: []; params?: {} }
+    'admin.candidates.index': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'home': { paramsTuple?: []; params?: {} }
@@ -28,6 +30,7 @@ export type ScannedRoutes = {
     'verify.confirm': { paramsTuple?: []; params?: {} }
     'results.show': { paramsTuple?: []; params?: {} }
     'admin.objections.index': { paramsTuple?: []; params?: {} }
+    'admin.candidates.index': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'verify.request': { paramsTuple?: []; params?: {} }

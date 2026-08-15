@@ -19,6 +19,8 @@ export default function AdminObjections(props: InertiaProps<{ objections: Object
       <h1>Objections</h1>
       <p>
         <Link route="home">← Back to home</Link>
+        {' · '}
+        <Link route="admin.candidates.index">View candidate applications →</Link>
       </p>
 
       {objections.length === 0 ? (
