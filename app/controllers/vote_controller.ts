@@ -8,7 +8,18 @@ export default class VoteController {
   async store({ auth, params, request, response, session }: HttpContext) {
     const user = auth.user!
     const round = await Round.findOrFail(params.id)
-    const { candidateIds } = await request.validateUsing(voteValidator)
+    const payload = await request.validateUsing(voteValidator)
+
+    let candidateIds: number[]
+    try {
+      candidateIds = JSON.parse(payload.candidateIds) as number[]
+      if (!Array.isArray(candidateIds) || candidateIds.some((n) => !Number.isInteger(n))) {
+        throw new Error('Invalid candidate list')
+      }
+    } catch {
+      session.flash('error', 'Invalid candidate list')
+      return response.redirect().back()
+    }
 
     const phase = round.status === 'voting1' ? 1 : round.status === 'voting2' ? 2 : null
     if (!phase) {
