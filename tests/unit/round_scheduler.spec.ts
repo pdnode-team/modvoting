@@ -91,7 +91,9 @@ test.group('RoundScheduler', (group) => {
     assert.equal(again, 0) // 幂等
   })
 
-  test('createSpecialRound: 自定义开启时刻，三阶段 16h×3', async ({ assert }) => {
+  test('createSpecialRound: 自定义开启时刻 = 投票一开启（竞选开放至投票前），投票 24h+24h', async ({
+    assert,
+  }) => {
     const scheduler = new RoundScheduler({ now: () => NOW })
     const startsAt = DateTime.fromISO('2026-08-25T00:00:00.000-07:00', {
       zone: 'America/Los_Angeles',
@@ -101,8 +103,9 @@ test.group('RoundScheduler', (group) => {
 
     assert.isTrue(Boolean(round.special))
     assert.equal(round.startsAt.toISO(), startsAt.toUTC().toISO())
-    assert.equal(round.campaignEndsAt.toISO(), startsAt.plus({ hours: 16 }).toUTC().toISO())
-    assert.equal(round.voting1EndsAt!.toISO(), startsAt.plus({ hours: 32 }).toUTC().toISO())
+    // 竞选截止 = 投票一开启（报名一直开放到投票开始）
+    assert.equal(round.campaignEndsAt.toISO(), startsAt.toUTC().toISO())
+    assert.equal(round.voting1EndsAt!.toISO(), startsAt.plus({ hours: 24 }).toUTC().toISO())
     assert.equal(round.voting2EndsAt!.toISO(), startsAt.plus({ hours: 48 }).toUTC().toISO())
     assert.equal(round.endsAt.toISO(), startsAt.plus({ hours: 48 }).toUTC().toISO())
   })
@@ -115,6 +118,51 @@ test.group('RoundScheduler', (group) => {
       () => scheduler.createSpecialRound('2026-09', DateTime.now()),
       /already exists/
     )
+  })
+
+  test('fixLegacyPhaseTimes: 旧 16h 结构 campaigning 轮 → 修正为 24+24（仅未开投票的轮）', async ({
+    assert,
+  }) => {
+    const scheduler = new RoundScheduler({ now: () => NOW })
+    const startsAt = DateTime.fromISO('2026-08-25T07:00:00.000Z', { zone: 'UTC' })
+    await Round.create({
+      month: '2026-09',
+      special: true,
+      status: 'campaigning',
+      startsAt: startsAt.toUTC(),
+      campaignEndsAt: startsAt.plus({ hours: 16 }).toUTC(), // 旧结构
+      voting1EndsAt: startsAt.plus({ hours: 32 }).toUTC(), // 旧结构
+      voting2EndsAt: startsAt.plus({ hours: 48 }).toUTC(),
+      endsAt: startsAt.plus({ hours: 48 }).toUTC(),
+    })
+
+    const fixed = await scheduler.fixLegacyPhaseTimes()
+    assert.equal(fixed, 1)
+
+    const round = await Round.findByOrFail('month', '2026-09')
+    assert.equal(round.campaignEndsAt.toUTC().toISO(), startsAt.toUTC().toISO())
+    assert.equal(round.voting1EndsAt!.toUTC().toISO(), startsAt.plus({ hours: 24 }).toUTC().toISO())
+    assert.equal(round.voting2EndsAt!.toUTC().toISO(), startsAt.plus({ hours: 48 }).toUTC().toISO())
+  })
+
+  test('fixLegacyPhaseTimes: 投票进行中（voting1）的轮次不修改', async ({ assert }) => {
+    const scheduler = new RoundScheduler({ now: () => NOW })
+    const startsAt = DateTime.fromISO('2026-08-25T07:00:00.000Z', { zone: 'UTC' })
+    await Round.create({
+      month: '2026-10',
+      status: 'voting1',
+      startsAt: startsAt.toUTC(),
+      campaignEndsAt: startsAt.plus({ hours: 16 }).toUTC(),
+      voting1EndsAt: startsAt.plus({ hours: 32 }).toUTC(),
+      voting2EndsAt: startsAt.plus({ hours: 48 }).toUTC(),
+      endsAt: startsAt.plus({ hours: 48 }).toUTC(),
+    })
+
+    const fixed = await scheduler.fixLegacyPhaseTimes()
+    assert.equal(fixed, 0)
+
+    const round = await Round.findByOrFail('month', '2026-10')
+    assert.equal(round.voting1EndsAt!.toUTC().toISO(), startsAt.plus({ hours: 32 }).toUTC().toISO())
   })
 
   test('特殊轮占用 month 后 ensureRounds 跳过该月', async ({ assert }) => {

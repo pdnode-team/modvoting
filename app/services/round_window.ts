@@ -53,3 +53,20 @@ export function roundPhasesFor(month: string): RoundPhases {
     endsAt,
   }
 }
+
+/**
+ * 特殊轮阶段边界（America/Los_Angeles）：startsAt = 配置的开启时刻 = **投票一开启**，
+ * 竞选从轮次创建起一直开放（报名随时可交），投票一 24h + 投票二 24h，共 48h。
+ */
+export function specialRoundPhasesFor(startsAt: DateTime): RoundPhases {
+  const voting1StartsAt = startsAt.setZone(ZONE)
+  const endsAt = voting1StartsAt.plus({ hours: VOTE_HOURS * 2 })
+
+  return {
+    startsAt: voting1StartsAt,
+    campaignEndsAt: voting1StartsAt,
+    voting1EndsAt: voting1StartsAt.plus({ hours: VOTE_HOURS }),
+    voting2EndsAt: endsAt,
+    endsAt,
+  }
+}

@@ -21,6 +21,8 @@ void (async () => {
   try {
     await scheduler.ensureRounds(6)
     await scheduler.ensureSpecialRounds()
+    // 历史轮次时间迁移（24+24 结构；仅修正 campaigning 轮，投票进行中不动）
+    await scheduler.fixLegacyPhaseTimes()
     await roundLifecycle.refreshAll()
   } catch (error) {
     logger.error({ err: error }, 'election bootstrap failed')

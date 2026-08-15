@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import Round from '#models/round'
 import { electionConfig } from '#config/elections'
-import { roundPhasesFor } from './round_window.js'
+import { roundPhasesFor, specialRoundPhasesFor } from './round_window.js'
 
 interface RoundSchedulerOptions {
   /** 可注入的当前时间（测试用），默认 DateTime.now() */
@@ -77,16 +77,43 @@ export class RoundScheduler {
       throw new Error(`Round for ${month} already exists`)
     }
 
-    const endsAt = startsAt.plus({ hours: 48 })
+    const phases = specialRoundPhasesFor(startsAt)
 
     return Round.create({
       month,
-      startsAt: startsAt.toUTC(),
-      campaignEndsAt: startsAt.plus({ hours: 16 }).toUTC(),
-      voting1EndsAt: startsAt.plus({ hours: 32 }).toUTC(),
-      voting2EndsAt: endsAt.toUTC(),
-      endsAt: endsAt.toUTC(),
+      startsAt: phases.startsAt.toUTC(),
+      campaignEndsAt: phases.campaignEndsAt.toUTC(),
+      voting1EndsAt: phases.voting1EndsAt.toUTC(),
+      voting2EndsAt: phases.voting2EndsAt.toUTC(),
+      endsAt: phases.endsAt.toUTC(),
       special: true,
     })
+  }
+
+  /**
+   * 修正历史轮次的阶段时间（24+24 结构迁移）：
+   * 仅处理仍在 campaigning 的轮次（投票未开始，改时间安全）；
+   * voting1/voting2/objection/closed 一律不动。
+   */
+  async fixLegacyPhaseTimes(): Promise<number> {
+    let fixed = 0
+    const rounds = await Round.query().where('status', 'campaigning')
+
+    for (const round of rounds) {
+      const phases = round.special
+        ? specialRoundPhasesFor(round.startsAt)
+        : roundPhasesFor(round.month)
+
+      if (round.voting1EndsAt?.toMillis() !== phases.voting1EndsAt.toUTC().toMillis()) {
+        round.startsAt = phases.startsAt.toUTC()
+        round.campaignEndsAt = phases.campaignEndsAt.toUTC()
+        round.voting1EndsAt = phases.voting1EndsAt.toUTC()
+        round.voting2EndsAt = phases.voting2EndsAt.toUTC()
+        round.endsAt = phases.endsAt.toUTC()
+        await round.save()
+        fixed += 1
+      }
+    }
+    return fixed
   }
 }
