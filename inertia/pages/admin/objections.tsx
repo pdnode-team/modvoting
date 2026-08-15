@@ -1,3 +1,4 @@
+import { Head } from '@inertiajs/react'
 import { Link } from '@adonisjs/inertia/react'
 import type { InertiaProps } from '~/types'
 
@@ -14,6 +15,7 @@ export default function AdminObjections(props: InertiaProps<{ objections: Object
 
   return (
     <div className="form-container">
+      <Head title="Objections" />
       <h1>Objections</h1>
       <p>
         <Link route="home">← Back to home</Link>

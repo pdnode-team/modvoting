@@ -12,8 +12,8 @@ export class NotVerifiedError extends Error {}
 
 export interface CampaignAnswers {
   months: number
-  /** key = 上届版主名（配置化） */
-  opinions: Record<string, string>
+  /** key = 上届版主名（配置化）；值 = 1-5 星评分 */
+  opinions: Record<string, number>
 }
 
 /**
@@ -71,9 +71,9 @@ export class CampaignService {
       throw new QuestionnaireError('months must be a positive integer')
     }
     for (const moderator of this.previousModerators) {
-      const opinion = answers.opinions?.[moderator.name]
-      if (typeof opinion !== 'string' || !opinion.trim()) {
-        throw new QuestionnaireError(`Opinion about ${moderator.name} is required`)
+      const rating = answers.opinions?.[moderator.name]
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        throw new QuestionnaireError(`Rating (1-5) about ${moderator.name} is required`)
       }
     }
   }

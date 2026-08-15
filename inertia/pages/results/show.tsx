@@ -1,3 +1,4 @@
+import { Head } from '@inertiajs/react'
 import { Link } from '@adonisjs/inertia/react'
 import type { InertiaProps } from '~/types'
 
@@ -14,6 +15,7 @@ export default function Results(
 
   return (
     <div className="form-container">
+      <Head title="Election Results" />
       <h1>Election Results</h1>
       <p>
         <Link route="home">← Back to home</Link>

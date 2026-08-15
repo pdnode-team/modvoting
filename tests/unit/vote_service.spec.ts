@@ -247,7 +247,8 @@ test.group('VoteService', (group) => {
   })
 
   test('等级不足（Silver 门槛）→ 拒绝', async ({ assert }) => {
-    const service = new VoteService(fakeGuard({ 8: 10, 1: 30, 2: 30, 3: 30 }))
+    // 等级检查默认关闭（config.elections.voteLevelRequired=false），测试显式开启
+    const service = new VoteService(fakeGuard({ 8: 10, 1: 30, 2: 30, 3: 30 }), true)
     const round = await makeRound()
     const voter = await makeUser(8)
     const cands = await makeCandidates(

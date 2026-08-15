@@ -1,3 +1,4 @@
+import { Head } from '@inertiajs/react'
 import { Form } from '@adonisjs/inertia/react'
 import { useState } from 'react'
 import type { InertiaProps } from '~/types'
@@ -57,6 +58,7 @@ export default function Home(
 
   return (
     <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 16px 48px' }}>
+      <Head title="Moderator Election" />
       {!round ? (
         <div className="empty-state">
           <h2>No election in progress</h2>
@@ -206,8 +208,20 @@ export default function Home(
                 </div>
                 {previousModerators.map((name) => (
                   <div key={name}>
-                    <label>How do you think {name} is doing as a moderator?</label>
-                    <textarea name={`opinions[${name}]`} rows={2} style={{ width: '100%' }} />
+                    <label>How do you think {name} is doing as a moderator? (1-5 stars)</label>
+                    <fieldset className="star-rating">
+                      {[5, 4, 3, 2, 1].map((n) => (
+                        <label key={n} title={`${n} star${n > 1 ? 's' : ''}`}>
+                          <input
+                            type="radio"
+                            name={`opinions[${name}]`}
+                            value={n}
+                            defaultChecked={n === 3}
+                          />
+                          ★
+                        </label>
+                      ))}
+                    </fieldset>
                   </div>
                 ))}
                 <div>

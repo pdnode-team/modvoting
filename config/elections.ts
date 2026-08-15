@@ -12,6 +12,10 @@ export const electionConfig = {
   ],
   maxCandidates: 10,
   /**
+   * 投票等级要求（Silver+）。2026-08 测试期临时关闭（false），恢复投票资格限制时改回 true。
+   */
+  voteLevelRequired: false,
+  /**
    * 2026-09 特殊轮：8/25 00:00 LA 提前开启（16h×3 = 48h，8/27 00:00 结束），
    * 结果覆盖 9 月（任期至 10/1）。9 月常规轮不开。
    */

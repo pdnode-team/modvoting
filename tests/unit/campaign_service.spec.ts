@@ -34,7 +34,7 @@ function fakeGuard(levels: Record<number, number | null>): LevelGuardService {
   return new LevelGuardService(provider)
 }
 
-const VALID_ANSWERS = { months: 12, opinions: { 'MSCRWT': 'great', '小狗 2.0': 'ok' } }
+const VALID_ANSWERS = { months: 12, opinions: { 'MSCRWT': 5, '小狗 2.0': 4 } }
 
 test.group('CampaignService', (group) => {
   group.each.setup(async () => {
@@ -133,7 +133,7 @@ test.group('CampaignService', (group) => {
     const user = await makeUser(8)
 
     await assert.rejects(
-      () => service.apply(user, round, { months: 12, opinions: { MSCRWT: 'great' } }),
+      () => service.apply(user, round, { months: 12, opinions: { MSCRWT: 5 } }),
       QuestionnaireError
     )
   })

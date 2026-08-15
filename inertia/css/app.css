@@ -257,15 +257,29 @@ label {
 }
 input,
 textarea,
-button {
+select {
   width: 100%;
-  border-radius: 4px;
+  border-radius: 6px;
   font: inherit;
 }
-input {
+input,
+select {
   height: 40px;
   border: 1px solid var(--gray-4);
-  padding: 0 16px;
+  padding: 0 12px;
+  background: #fff;
+}
+textarea {
+  border: 1px solid var(--gray-4);
+  padding: 10px 12px;
+  background: #fff;
+  resize: vertical;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--gray-8);
 }
 input[data-invalid='true'],
 textarea[data-invalid='true'] {
@@ -283,11 +297,48 @@ button {
   background: var(--gray-12);
   color: #fff;
   border: none;
-  padding: 10px;
+  padding: 10px 16px;
+  border-radius: 6px;
   font-weight: 500;
+  width: auto;
+  cursor: pointer;
 }
 button:hover {
   background: var(--gray-10);
+}
+.form-container button {
+  width: 100%;
+}
+header button {
+  width: auto;
+}
+
+fieldset.star-rating {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 4px;
+}
+.star-rating label {
+  margin: 0;
+  cursor: pointer;
+  font-size: 22px;
+  color: var(--gray-4);
+}
+.star-rating input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.star-rating input:checked ~ label {
+  color: #f59e0b;
+}
+.star-rating input:checked + label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: #f59e0b;
 }
 
 /* Alerts */

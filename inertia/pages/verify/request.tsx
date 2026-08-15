@@ -1,8 +1,10 @@
+import { Head } from '@inertiajs/react'
 import { Form } from '@adonisjs/inertia/react'
 
 export default function VerifyRequest() {
   return (
     <div className="form-container">
+      <Head title="Email Verification" />
       <div>
         <h1> Email verification </h1>
         <p>

@@ -4,6 +4,7 @@ import type Round from '#models/round'
 import type User from '#models/user'
 import Vote from '#models/vote'
 import { type LevelGuardService } from './level_guard_service.js'
+import { electionConfig } from '#config/elections'
 
 export class VotingPhaseError extends Error {}
 export class IncompleteBallotError extends Error {}
@@ -21,7 +22,11 @@ const BALLOT_SIZE: Record<1 | 2, number> = { 1: 3, 2: 2 }
  * - 一人一阶段只能提交一次（DB 唯一约束兜底并发）
  */
 export class VoteService {
-  constructor(private readonly guard: LevelGuardService) {}
+  constructor(
+    private readonly guard: LevelGuardService,
+    /** 投票等级要求（临时关闭以测试投票流程） */
+    private readonly voteLevelRequired: boolean = electionConfig.voteLevelRequired
+  ) {}
 
   async castVotes(user: User, round: Round, phase: 1 | 2, candidateIds: number[]): Promise<Vote[]> {
     const expectedStatus = phase === 1 ? 'voting1' : 'voting2'
@@ -31,7 +36,10 @@ export class VoteService {
     if (!user.zulipUserId) {
       throw new Error('Email not verified / no Zulip identity bound')
     }
-    await this.guard.assertLevel(user.zulipUserId, 'silver')
+    // TODO(2026-08): 投票等级要求临时关闭（config.elections.voteLevelRequired=false），恢复时删掉条件
+    if (this.voteLevelRequired) {
+      await this.guard.assertLevel(user.zulipUserId, 'silver')
+    }
 
     this.#validateBallot(phase, candidateIds)
 
