@@ -4,6 +4,7 @@ import Candidate from '#models/candidate'
 import Round from '#models/round'
 import TieBreak from '#models/tie_break'
 import { selectTop, type TallyRow } from './tie_break_utils.js'
+import { electionConfig } from '#config/elections'
 
 interface LifecycleOptions {
   now?: () => DateTime
@@ -11,15 +12,13 @@ interface LifecycleOptions {
   onResults?: (round: Round) => Promise<void> | void
 }
 
-export const AFFIRMATIVE_CAP = 3
 export const TOP5 = 5
-export const TOP3 = 3
 
 /**
  * 轮次状态机（按当前时间推进）：
- * campaigning → (≤3) objection(公示32h) / (>3) voting1
+ * campaigning → (≤acclamationCap) objection(公示32h) / (>acclamationCap) voting1
  * voting1 → Top5 进二轮 → voting2
- * voting2 → Top3 当选 → closed
+ * voting2 → Top(winnersCount) 当选 → closed
  * objection → closed
  */
 export class RoundLifecycle {
@@ -60,7 +59,7 @@ export class RoundLifecycle {
       .where('status', 'approved')
       .count('* as c')
 
-    if (Number($extras.c) <= AFFIRMATIVE_CAP) {
+    if (Number($extras.c) <= electionConfig.acclamationCap) {
       round.mode = 'acclamation'
       round.status = 'objection' // 免投票 → 公示期（异议窗口）
     } else {
@@ -72,7 +71,7 @@ export class RoundLifecycle {
 
   async #closeVoting(round: Round, phase: 1 | 2): Promise<void> {
     const tally = await this.#tally(round, phase)
-    const n = phase === 1 ? TOP5 : TOP3
+    const n = phase === 1 ? TOP5 : electionConfig.winnersCount
     const stage = phase === 1 ? 'top5' : 'winners'
 
     const { selected, tieBreak } = selectTop(tally, n)

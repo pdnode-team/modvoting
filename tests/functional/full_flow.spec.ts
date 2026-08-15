@@ -40,7 +40,7 @@ test.group('Full election flow (end-to-end)', (group) => {
     await cleanElectionTables()
   })
 
-  test('>3 候选人：报名→投票一→Top5→投票二→Top3→结果', async ({ assert }) => {
+  test('>2 候选人：报名→投票一→Top5→投票二→Top2→结果', async ({ assert }) => {
     const guard = fakeGuard(Object.fromEntries(Array.from({ length: 10 }, (_, i) => [i + 1, 30])))
     const campaign = new CampaignService(guard)
     const vote = new VoteService(guard, false) // 等级检查关闭
@@ -136,7 +136,7 @@ test.group('Full election flow (end-to-end)', (group) => {
     assert.equal(round.status, 'closed')
 
     const results = await new ResultService().resultsFor(round)
-    assert.equal(results.winners.length, 3)
+    assert.equal(results.winners.length, 2)
     assert.isAtLeast(results.phase1.length, 4) // 0 票候选不出现在 tally
     assert.isAtMost(results.phase1.length, 6)
     assert.isAtLeast(results.phase2.length, 3) // 二轮 0 票候选同样不出现在 tally
@@ -148,7 +148,7 @@ test.group('Full election flow (end-to-end)', (group) => {
     }
   })
 
-  test('≤3 候选人：免投票直接当选 + 公示期异议', async ({ assert }) => {
+  test('≤2 候选人：免投票直接当选 + 公示期异议', async ({ assert }) => {
     const guard = fakeGuard({ 1: 30, 2: 30, 3: 30 })
     const campaign = new CampaignService(guard)
     const campaignEnd = new RoundLifecycle({ now: () => NOW.plus({ hours: 1 }) })
@@ -165,7 +165,7 @@ test.group('Full election flow (end-to-end)', (group) => {
     })
 
     const users = await Promise.all(
-      Array.from({ length: 3 }, (_, i) =>
+      Array.from({ length: 2 }, (_, i) =>
         User.create({
           email: `u${i + 1}@t.com`,
           password: 'x',
@@ -178,7 +178,7 @@ test.group('Full election flow (end-to-end)', (group) => {
       await campaign.apply(u, round, { months: 6, opinions: { 'MSCRWT': 5, '小狗 2.0': 3 } })
     }
 
-    // 竞选结束 → ≤3 直接当选 + 公示期
+    // 竞选结束 → ≤2 直接当选 + 公示期
     await campaignEnd.refresh(round)
     await round.refresh()
     assert.equal(round.status, 'objection')
@@ -186,7 +186,7 @@ test.group('Full election flow (end-to-end)', (group) => {
 
     // 结果（公示期）：全部当选
     const results = await new ResultService().resultsFor(round)
-    assert.equal(results.winners.length, 3)
+    assert.equal(results.winners.length, 2)
 
     // 异议（由外部用户提交，需要该用户绑定 zulip）
     const { ObjectionService } = await import('#services/objection_service')

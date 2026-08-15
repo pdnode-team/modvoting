@@ -11,6 +11,10 @@ export const electionConfig = {
     { name: '小狗 2.0', zulipId: 16 },
   ],
   maxCandidates: 10,
+  /** 当选人数（投票二 Top N / 免投票直接当选人数上限） */
+  winnersCount: 2,
+  /** 候选人 ≤ 此人数时免投票直接当选（公示期 + 异议） */
+  acclamationCap: 2,
   /**
    * 投票等级要求（Silver+）。2026-08 测试期临时关闭（false），恢复投票资格限制时改回 true。
    */

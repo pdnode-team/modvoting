@@ -3,6 +3,7 @@ import Candidate from '#models/candidate'
 import type Round from '#models/round'
 import TieBreak from '#models/tie_break'
 import { selectTop, type TallyRow } from './tie_break_utils.js'
+import { electionConfig } from '#config/elections'
 
 export interface ResultEntry {
   candidate: Candidate
@@ -18,7 +19,7 @@ export interface RoundResults {
 /**
  * 结果聚合：
  * - acclamation：全部 approved 候选人为 winners（无投票）
- * - election：phase2 票数 Top3 为 winners；若 winners 位置存在平票随机，
+ * - election：phase2 票数 Top(winnersCount) 为 winners；若 winners 位置存在平票随机，
  *   以 tie_breaks 记录为准（可审计、可重现）。
  */
 export class ResultService {
@@ -59,13 +60,13 @@ export class ResultService {
     if (tieBreak) {
       // 平票随机已发生：以记录为准（locked 部分按票数 + tie_break 选中部分）
       const chosen = JSON.parse(tieBreak.selectedIds) as number[]
-      // locked = 票数 > 第 3 名（tie_break 未包含的确定入选者）
+      // locked = 票数 > 第 winnersCount 名（tie_break 未包含的确定入选者）
       const sorted = [...tally].sort((a, b) => b.votes - a.votes)
-      const cutoff = sorted[2].votes
+      const cutoff = sorted[electionConfig.winnersCount - 1].votes
       const locked = sorted.filter((s) => s.votes > cutoff).map((s) => s.candidateId)
       selected = [...locked, ...chosen]
     } else {
-      selected = selectTop(tally, 3).selected
+      selected = selectTop(tally, electionConfig.winnersCount).selected
     }
 
     const byId = new Map(candidates.map((c) => [c.id, c]))

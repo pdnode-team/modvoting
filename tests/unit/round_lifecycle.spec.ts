@@ -77,7 +77,7 @@ test.group('RoundLifecycle', (group) => {
     }
   }
 
-  test('竞选结束 ≤3 人 → acclamation + objection（免投票）', async ({ assert }) => {
+  test('竞选结束 ≤2 人 → acclamation + objection（免投票）', async ({ assert }) => {
     const round = await makeRound()
     await addCandidates(round, [1, 2])
     const lifecycle = new RoundLifecycle({ now: () => at('2026-09-29T23:30:00.000Z') }) // 竞选后
@@ -89,7 +89,7 @@ test.group('RoundLifecycle', (group) => {
     assert.equal(round.status, 'objection')
   })
 
-  test('竞选结束 >3 人 → election + voting1', async ({ assert }) => {
+  test('竞选结束 >2 人 → election + voting1', async ({ assert }) => {
     const round = await makeRound()
     await addCandidates(round, [1, 2, 3, 4])
     const lifecycle = new RoundLifecycle({ now: () => at('2026-09-29T23:30:00.000Z') })
@@ -211,7 +211,7 @@ test.group('RoundLifecycle', (group) => {
     assert.lengthOf(JSON.parse(tieBreak!.selectedIds), 1)
   })
 
-  test('voting2 结束 → Top3 当选（status=closed）', async ({ assert }) => {
+  test('voting2 结束 → Top2 当选（status=closed）', async ({ assert }) => {
     const round = await makeRound({ status: 'voting2', mode: 'election' })
     const cands = await addCandidates(round, [1, 2, 3, 4, 5])
     for (const c of cands.slice(0, 3)) c.enteredVoting2 = true
@@ -236,18 +236,18 @@ test.group('RoundLifecycle', (group) => {
     const results = await new ResultService().resultsFor(round)
     assert.deepEqual(
       results.winners.map((w) => Number(w.candidate.user.zulipUserId)),
-      [1, 2, 3]
+      [1, 2]
     )
   })
 
-  test('voting2 平票：Top3 位置平票 → 随机并记录 tie_breaks', async ({ assert }) => {
+  test('voting2 平票：第 2 名位置平票 → 随机并记录 tie_breaks', async ({ assert }) => {
     const round = await makeRound({ status: 'voting2', mode: 'election' })
     const cands = await addCandidates(round, [1, 2, 3, 4])
     for (const c of cands) {
       c.enteredVoting2 = true
       await c.save()
     }
-    // c0=4, c1=3, c2=1, c3=1 → 3/4 名平票 1
+    // c0=4, c1=2, c2=2, c3=1 → 第 2 名位置 c1/c2 平票
     const votes: Array<[number, number]> = [
       [10, 0],
       [11, 0],
@@ -255,8 +255,8 @@ test.group('RoundLifecycle', (group) => {
       [13, 0],
       [20, 1],
       [21, 1],
-      [22, 1],
       [30, 2],
+      [31, 2],
       [40, 3],
     ]
     for (const [zid, idx] of votes) await cast(round, zid, 2, [cands[idx].id])
@@ -266,7 +266,7 @@ test.group('RoundLifecycle', (group) => {
     await round.refresh()
 
     const winners = await new ResultService().resultsFor(round)
-    assert.lengthOf(winners.winners, 3)
+    assert.lengthOf(winners.winners, 2)
 
     const tieBreak = await TieBreak.query()
       .where('roundId', round.id)
