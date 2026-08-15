@@ -165,6 +165,34 @@ test.group('RoundScheduler', (group) => {
     assert.equal(round.voting1EndsAt!.toUTC().toISO(), startsAt.plus({ hours: 32 }).toUTC().toISO())
   })
 
+  test('fixLegacyPhaseTimes: 特殊轮从 config 推导时间（读回时区歧义不引入 +7h 偏移）', async ({
+    assert,
+  }) => {
+    const scheduler = new RoundScheduler({ now: () => NOW })
+    // 模拟 Lucid 读回歧义：starts_at 被按本地时区（LA）解析成 14:00Z 存库
+    const pollutedStarts = DateTime.fromISO('2026-08-25T14:00:00.000Z', { zone: 'UTC' })
+    await Round.create({
+      month: '2026-09',
+      special: true,
+      status: 'campaigning',
+      startsAt: pollutedStarts.toUTC(),
+      campaignEndsAt: pollutedStarts.plus({ hours: 16 }).toUTC(),
+      voting1EndsAt: pollutedStarts.plus({ hours: 32 }).toUTC(),
+      voting2EndsAt: pollutedStarts.plus({ hours: 48 }).toUTC(),
+      endsAt: pollutedStarts.plus({ hours: 48 }).toUTC(),
+    })
+
+    const fixed = await scheduler.fixLegacyPhaseTimes()
+    assert.equal(fixed, 1)
+
+    const round = await Round.findByOrFail('month', '2026-09')
+    // config specialRounds['2026-09'] = 8/25 00:00 LA = 07:00Z（投票一开启）
+    assert.equal(round.startsAt.toUTC().toISO(), '2026-08-25T07:00:00.000Z')
+    assert.equal(round.campaignEndsAt.toUTC().toISO(), '2026-08-25T07:00:00.000Z')
+    assert.equal(round.voting1EndsAt!.toUTC().toISO(), '2026-08-26T07:00:00.000Z')
+    assert.equal(round.voting2EndsAt!.toUTC().toISO(), '2026-08-27T07:00:00.000Z')
+  })
+
   test('特殊轮占用 month 后 ensureRounds 跳过该月', async ({ assert }) => {
     const scheduler = new RoundScheduler({ now: () => NOW })
     await scheduler.createSpecialRound('2026-09', DateTime.now())

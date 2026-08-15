@@ -100,8 +100,13 @@ export class RoundScheduler {
     const rounds = await Round.query().where('status', 'campaigning')
 
     for (const round of rounds) {
-      const phases = round.special
-        ? specialRoundPhasesFor(round.startsAt)
+      // 特殊轮从 config 推导（明确 LA 语义）；round.startsAt 读回无时区标记，
+      // 按进程本地时区解析会产生歧义（如 Pacific 环境 +7h）——不能用它做输入。
+      const configStarts = round.special
+        ? (electionConfig.specialRounds as Record<string, string | undefined>)[round.month]
+        : undefined
+      const phases = configStarts
+        ? specialRoundPhasesFor(DateTime.fromISO(configStarts, { zone: 'America/Los_Angeles' }))
         : roundPhasesFor(round.month)
 
       if (round.voting1EndsAt?.toMillis() !== phases.voting1EndsAt.toUTC().toMillis()) {
