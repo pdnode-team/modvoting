@@ -1,9 +1,10 @@
-# pnpm 11 settings live here (package.json "pnpm" field is ignored since v11)
-onlyBuiltDependencies:
-  - '@swc/core'
-  - better-sqlite3
-  - esbuild
-  - fsevents
+# pnpm 11 settings（pnpm 11.17 实测：allowBuilds 须为对象格式 {pkg: true}；
+# 数组格式（onlyBuiltDependencies）在此版本不生效，会 ERR_PNPM_IGNORED_BUILDS 失败）
+allowBuilds:
+  '@swc/core': true
+  better-sqlite3: true
+  esbuild: true
+  fsevents: true
 
 overrides:
   eslint-plugin-react>eslint: $eslint
