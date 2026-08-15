@@ -44,6 +44,7 @@ export default function Home(
 ) {
   const { round, campaignRound, candidates, previousModerators, user } = props
   const [selected, setSelected] = useState<number[]>([])
+  const [opinions, setOpinions] = useState<Record<string, number>>({})
 
   const requiredVotes = round?.status === 'voting1' ? 3 : round?.status === 'voting2' ? 2 : 0
 
@@ -207,24 +208,28 @@ export default function Home(
                   <input type="number" name="months" min={1} step={1} />
                   {errors.months && <div>{errors.months}</div>}
                 </div>
-                {previousModerators.map((name) => (
-                  <div key={name}>
-                    <label>How do you think {name} is doing as a moderator? (1-5 stars)</label>
-                    <fieldset className="star-rating">
-                      {[5, 4, 3, 2, 1].map((n) => (
-                        <label key={n} title={`${n} star${n > 1 ? 's' : ''}`}>
-                          <input
-                            type="radio"
-                            name={`opinions[${name}]`}
-                            value={n}
-                            defaultChecked={n === 3}
-                          />
-                          ★
-                        </label>
-                      ))}
-                    </fieldset>
-                  </div>
-                ))}
+                {previousModerators.map((name) => {
+                  const current = opinions[name] ?? 3
+                  return (
+                    <div key={name}>
+                      <label>How do you think {name} is doing as a moderator? (1-5 stars)</label>
+                      <div className="star-rating">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            className={`star${n <= current ? ' on' : ''}`}
+                            title={`${n} star${n > 1 ? 's' : ''}`}
+                            onClick={() => setOpinions((prev) => ({ ...prev, [name]: n }))}
+                          >
+                            ★
+                          </button>
+                        ))}
+                        <input type="hidden" name={`opinions[${name}]`} value={current} />
+                      </div>
+                    </div>
+                  )
+                })}
                 <div>
                   <button type="submit" className="button">
                     Submit application

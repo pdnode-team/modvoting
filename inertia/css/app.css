@@ -313,31 +313,22 @@ header button {
   width: auto;
 }
 
-fieldset.star-rating {
-  border: none;
-  padding: 0;
-  margin: 0;
+.star-rating {
   display: flex;
   gap: 4px;
 }
-.star-rating label {
+.star-rating .star {
   margin: 0;
+  padding: 0 2px;
+  background: none;
+  border: none;
   cursor: pointer;
   font-size: 22px;
+  line-height: 1;
   color: var(--gray-4);
+  width: auto;
 }
-.star-rating input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.star-rating input:checked ~ label {
-  color: #f59e0b;
-}
-.star-rating input:checked + label,
-.star-rating label:hover,
-.star-rating label:hover ~ label {
+.star-rating .star.on {
   color: #f59e0b;
 }
 
