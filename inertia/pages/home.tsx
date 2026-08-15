@@ -1,4 +1,4 @@
-import { Form, Link } from '@adonisjs/inertia/react'
+import { Form } from '@adonisjs/inertia/react'
 import { useState } from 'react'
 import type { InertiaProps } from '~/types'
 
@@ -56,142 +56,49 @@ export default function Home(
   }
 
   return (
-    <div
-      style={{
-        maxWidth: 760,
-        margin: '0 auto',
-        padding: '0 16px 48px',
-        fontFamily: 'system-ui, sans-serif',
-      }}
-    >
-      <header
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '16px 0',
-          borderBottom: '1px solid #e5e7eb',
-        }}
-      >
-        <h1 style={{ fontSize: 20, margin: 0 }}>Pdnode Moderator Election</h1>
-        <nav style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Link route="results.show">Results</Link>
-          {user ? (
-            <>
-              <span style={{ color: '#6b7280', fontSize: 14 }}>{user.email}</span>
-              <Form route="session.destroy">
-                <button type="submit" className="button">
-                  Logout
-                </button>
-              </Form>
-            </>
-          ) : (
-            <Link route="verify.show">Email verify login</Link>
-          )}
-        </nav>
-      </header>
-
+    <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 16px 48px' }}>
       {!round ? (
-        <div
-          style={{
-            marginTop: 48,
-            padding: 32,
-            textAlign: 'center',
-            border: '1px dashed #d1d5db',
-            borderRadius: 12,
-            color: '#6b7280',
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>No election in progress</h2>
+        <div className="empty-state">
+          <h2>No election in progress</h2>
           <p>The next election opens on the last days of each month.</p>
         </div>
       ) : (
         <>
-          <section
-            style={{
-              marginTop: 24,
-              padding: 20,
-              border: '1px solid #e5e7eb',
-              borderRadius: 12,
-              background: '#fafafa',
-            }}
-          >
+          <h1>Moderator Election</h1>
+          <section className="section-card">
             <div
               style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}
             >
               <h2 style={{ margin: 0, fontSize: 18 }}>
-                {round.month} Election{' '}
-                {round.special && (
-                  <span
-                    style={{
-                      fontSize: 12,
-                      background: '#fef3c7',
-                      color: '#92400e',
-                      padding: '2px 8px',
-                      borderRadius: 999,
-                      marginLeft: 8,
-                    }}
-                  >
-                    Special round
-                  </span>
-                )}
+                {round.month} Election
+                {round.special && <span className="badge">Special round</span>}
               </h2>
-              <span
-                style={{
-                  fontSize: 13,
-                  background: '#eef2ff',
-                  color: '#4338ca',
-                  padding: '4px 10px',
-                  borderRadius: 999,
-                }}
-              >
+              <span className="status-pill">
                 {STATUS_LABEL[round.status] ?? round.status}
                 {round.mode !== 'undecided' && MODE_LABEL[round.mode]
                   ? ` · ${MODE_LABEL[round.mode]}`
                   : ''}
               </span>
             </div>
-            <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 0 }}>
+            <p className="muted" style={{ marginBottom: 0 }}>
               Starts {fmt(round.startsAt)} · Ends {fmt(round.endsAt)}
             </p>
           </section>
 
           <section style={{ marginTop: 24 }}>
-            <h3 style={{ fontSize: 16 }}>Candidates ({candidates.length})</h3>
+            <h3>Candidates ({candidates.length})</h3>
             {candidates.length === 0 ? (
-              <p style={{ color: '#6b7280' }}>No candidates yet.</p>
+              <p className="muted">No candidates yet.</p>
             ) : (
               <div style={{ display: 'grid', gap: 10 }}>
                 {candidates.map((c) => (
-                  <div
-                    key={c.id}
-                    style={{
-                      padding: 12,
-                      border: '1px solid #e5e7eb',
-                      borderRadius: 10,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      gap: 12,
-                    }}
-                  >
+                  <div key={c.id} className="candidate-row">
                     <div>
                       <strong>{c.name}</strong>
-                      {c.statement && (
-                        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-                          {c.statement}
-                        </p>
-                      )}
+                      {c.statement && <p className="statement">{c.statement}</p>}
                     </div>
                     {(round.status === 'voting1' || round.status === 'voting2') && (
-                      <label
-                        style={{
-                          display: 'flex',
-                          gap: 6,
-                          alignItems: 'center',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
+                      <label>
                         <input
                           type="checkbox"
                           checked={selected.includes(c.id)}
@@ -207,14 +114,7 @@ export default function Home(
           </section>
 
           {requiredVotes > 0 && (
-            <section
-              style={{
-                marginTop: 20,
-                padding: 16,
-                border: '1px solid #e5e7eb',
-                borderRadius: 10,
-              }}
-            >
+            <section className="section-card">
               <Form
                 route="votes.store"
                 routeParams={{ id: round.id }}
@@ -242,15 +142,8 @@ export default function Home(
           )}
 
           {round.status === 'objection' && user && (
-            <section
-              style={{
-                marginTop: 20,
-                padding: 16,
-                border: '1px solid #e5e7eb',
-                borderRadius: 10,
-              }}
-            >
-              <h3 style={{ marginTop: 0 }}>Object to a result?</h3>
+            <section className="section-card">
+              <h3>Object to a result?</h3>
               <Form route="objections.store" routeParams={{ id: round.id }}>
                 {({ errors }) => (
                   <div style={{ display: 'grid', gap: 10 }}>
@@ -287,19 +180,12 @@ export default function Home(
       )}
 
       {campaignRound && user && (
-        <section
-          style={{
-            marginTop: 20,
-            padding: 16,
-            border: '1px solid #e5e7eb',
-            borderRadius: 10,
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>
+        <section className="section-card">
+          <h3>
             Run for moderator — next election: {campaignRound.month}
             {campaignRound.special ? ' (special round)' : ''}
           </h3>
-          <p style={{ color: '#6b7280', fontSize: 14, marginTop: 0 }}>
+          <p className="muted">
             Applications are open anytime until voting starts on {fmt(campaignRound.campaignEndsAt)}
             .
           </p>

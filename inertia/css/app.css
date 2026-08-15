@@ -50,12 +50,20 @@ header {
   max-width: 1440px;
   margin: auto;
   padding: 0 30px;
+  background: #fff;
+  border-bottom: 1px solid var(--gray-3);
 }
 header > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 64px;
+}
+header .brand {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--gray-12);
 }
 header nav {
   display: flex;
@@ -69,6 +77,10 @@ header nav a {
 header nav a:hover,
 header nav a.current {
   color: var(--gray-12);
+}
+header nav .user-email {
+  color: var(--gray-6);
+  font-size: 14px;
 }
 
 /* Main */
@@ -130,6 +142,89 @@ main {
   color: var(--gray-6);
 }
 
+/* Page content */
+main > div > h1 {
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  margin: 24px 0 8px;
+}
+
+.muted {
+  color: var(--gray-6);
+  font-size: 14px;
+}
+
+.section-card {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--gray-3);
+  border-radius: 10px;
+  background: #fff;
+}
+.section-card h3 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.status-pill {
+  font-size: 13px;
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.candidate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--gray-3);
+  border-radius: 10px;
+  background: #fff;
+}
+.candidate-row .statement {
+  margin: 4px 0 0;
+  color: var(--gray-6);
+  font-size: 14px;
+}
+.candidate-row label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.empty-state {
+  margin-top: 48px;
+  padding: 32px;
+  text-align: center;
+  border: 1px dashed var(--gray-4);
+  border-radius: 12px;
+  color: var(--gray-6);
+}
+.empty-state h2 {
+  margin-top: 0;
+}
+
+button.button {
+  width: auto;
+  padding: 10px 16px;
+}
+
 /* Form */
 .form-container {
   display: flex;
@@ -137,6 +232,7 @@ main {
   justify-content: center;
   max-width: 400px;
   margin: auto;
+  padding: 48px 0;
 }
 .form-container h1 {
   font-size: 32px;
