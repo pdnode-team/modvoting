@@ -9,13 +9,14 @@ export interface RoundPhases {
 }
 
 const ZONE = 'America/Los_Angeles'
-const PHASE_HOURS = 16
+const VOTE_HOURS = 24
 
 /**
- * 计算自然月轮次的三阶段时间边界（全为 America/Los_Angeles 时区）。
+ * 计算自然月轮次的阶段时间边界（全为 America/Los_Angeles 时区）。
  *
- * 常规轮规则：month 标识该轮次所属月份，轮次在**下月 1 号 00:00（LA）**结束，
- * 竞选/投票一/投票二各 16 小时，总 48 小时。
+ * 常规轮规则：month 标识该轮次所属月份，轮次在**下月 1 号 00:00（LA）**结束。
+ * 总 48 小时 = 投票一 24h + 投票二 24h；竞选阶段从轮次创建起一直开放
+ * （报名随时开放），直到投票一开启（endsAt − 48h）截止。
  *
  * 禁止手写 UTC 偏移（PDT/PST 随 DST 切换，luxon 按 IANA zone 解析）。
  */
@@ -41,10 +42,13 @@ export function roundPhasesFor(month: string): RoundPhases {
     { zone: ZONE }
   )
 
+  const voting1EndsAt = endsAt.minus({ hours: VOTE_HOURS })
+  const voting1StartsAt = voting1EndsAt.minus({ hours: VOTE_HOURS })
+
   return {
-    startsAt: endsAt.minus({ hours: PHASE_HOURS * 3 }),
-    campaignEndsAt: endsAt.minus({ hours: PHASE_HOURS * 2 }),
-    voting1EndsAt: endsAt.minus({ hours: PHASE_HOURS }),
+    startsAt: voting1StartsAt,
+    campaignEndsAt: voting1StartsAt,
+    voting1EndsAt,
     voting2EndsAt: endsAt,
     endsAt,
   }
