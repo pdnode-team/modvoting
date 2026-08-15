@@ -6,7 +6,7 @@ export default class ResultsController {
   async show({ inertia, params }: HttpContext) {
     const round = params.id
       ? await Round.findOrFail(params.id)
-      : await Round.query().orderBy('endsAt', 'desc').first()
+      : await Round.query().where('status', 'closed').orderBy('endsAt', 'desc').first()
 
     if (!round) {
       return inertia.render('results/show', { round: null, results: null })
