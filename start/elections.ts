@@ -26,8 +26,7 @@ void (async () => {
     logger.error({ err: error }, 'election bootstrap failed')
   }
 
-  const isServerProcess =
-    process.argv[1]?.endsWith('server.js') || process.argv.includes('serve')
+  const isServerProcess = process.argv[1]?.endsWith('server.js') || process.argv.includes('serve')
   if (isServerProcess) {
     setInterval(
       () => {
