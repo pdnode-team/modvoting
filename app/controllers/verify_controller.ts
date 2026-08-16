@@ -4,6 +4,7 @@ import { VerifyTokenService } from '#services/verify_token_service'
 import { mailService } from '#services/mail_service'
 import { directory } from '#services/directory/index'
 import { verifyRequestValidator } from '#validators/verify'
+import { checkLimit } from '#services/rate_limit'
 import type { HttpContext } from '@adonisjs/core/http'
 
 /**
@@ -17,6 +18,13 @@ export default class VerifyController {
 
   async request({ request, response, session, logger }: HttpContext) {
     const { email } = await request.validateUsing(verifyRequestValidator)
+
+    // 限速：防刷验证邮件（按邮箱 10min 5 次）
+    const limit = checkLimit('verify', `email:${email.toLowerCase()}`)
+    if (!limit.allowed) {
+      session.flash('error', `Too many requests, retry in ${Math.ceil(limit.resetInMs / 1000)}s`)
+      return response.redirect().back()
+    }
 
     let userExists = false
     try {
